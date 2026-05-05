@@ -4,6 +4,10 @@ import com.garagem77.customer.dto.CustomerCreateRequest;
 import com.garagem77.customer.dto.CustomerResponse;
 import com.garagem77.customer.entity.Customer;
 import com.garagem77.customer.service.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,23 +22,41 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
+@Tag(name = "Clientes", description = "Gerenciamento de clientes do sistema")
 public class CustomerController {
 
     private final CustomerService customerService;
 
     @GetMapping("/{publicId}")
+    @Operation(summary = "Buscar cliente por ID", description = "Retorna os detalhes de um cliente específico pelo seu ID público")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
     public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable UUID publicId) {
         Customer customer = customerService.findByPublicId(publicId);
         return ResponseEntity.ok(toResponse(customer));
     }
 
     @GetMapping("/cpf/{cpf}")
+    @Operation(summary = "Buscar cliente por CPF", description = "Retorna os detalhes de um cliente específico pelo seu CPF")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+        @ApiResponse(responseCode = "400", description = "CPF inválido")
+    })
     public ResponseEntity<CustomerResponse> getCustomerByCpf(@PathVariable String cpf) {
         Customer customer = customerService.findByCpf(cpf);
         return ResponseEntity.ok(toResponse(customer));
     }
 
     @GetMapping("/search")
+    @Operation(summary = "Pesquisar clientes por nome", description = "Retorna uma lista de clientes cujo nome corresponde ao termo de busca")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Parâmetro de busca inválido")
+    })
     public ResponseEntity<List<CustomerResponse>> searchByName(@RequestParam String name) {
         List<Customer> customers = customerService.findByName(name);
         List<CustomerResponse> responses = customers.stream()
@@ -44,6 +66,11 @@ public class CustomerController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos os clientes", description = "Retorna uma lista com todos os clientes cadastrados no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
+    })
     public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
         List<Customer> customers = customerService.findAll();
         List<CustomerResponse> responses = customers.stream()
@@ -53,6 +80,12 @@ public class CustomerController {
     }
 
     @PostMapping
+    @Operation(summary = "Criar novo cliente", description = "Cria um novo cliente no sistema com as informações fornecidas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cliente criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "409", description = "Conflito - CPF já registrado")
+    })
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CustomerCreateRequest request) {
         Customer customer = customerService.create(
             request.getCpf(),
@@ -66,6 +99,12 @@ public class CustomerController {
     }
 
     @PutMapping("/{publicId}")
+    @Operation(summary = "Atualizar cliente", description = "Atualiza as informações de um cliente existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     public ResponseEntity<CustomerResponse> updateCustomer(
             @PathVariable UUID publicId,
             @RequestParam(required = false) String name,
@@ -78,6 +117,12 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{publicId}")
+    @Operation(summary = "Deletar cliente", description = "Remove um cliente do sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Cliente deletado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID publicId) {
         customerService.delete(publicId);
         return ResponseEntity.noContent().build();

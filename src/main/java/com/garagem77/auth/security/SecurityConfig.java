@@ -74,9 +74,11 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/api/companies").permitAll()
                 .requestMatchers("/api/users").permitAll()
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )

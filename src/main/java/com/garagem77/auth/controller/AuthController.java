@@ -4,6 +4,10 @@ import com.garagem77.auth.dto.AuthenticationRequest;
 import com.garagem77.auth.dto.AuthenticationResponse;
 import com.garagem77.auth.security.JwtTokenProvider;
 import com.garagem77.auth.security.UserPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,15 +24,22 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Autenticação", description = "Endpoints para autenticação de usuários")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
+    @Operation(summary = "Login de usuário", description = "Autentica um usuário e retorna um token JWT")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida"),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
+        @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
+    })
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(

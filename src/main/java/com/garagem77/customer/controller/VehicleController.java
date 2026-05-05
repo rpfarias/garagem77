@@ -4,6 +4,10 @@ import com.garagem77.customer.dto.VehicleCreateRequest;
 import com.garagem77.customer.dto.VehicleResponse;
 import com.garagem77.customer.entity.Vehicle;
 import com.garagem77.customer.service.VehicleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,23 +21,42 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/vehicles")
 @RequiredArgsConstructor
+@Tag(name = "Veículos", description = "Gerenciamento de veículos dos clientes")
 public class VehicleController {
 
     private final VehicleService vehicleService;
 
     @GetMapping("/{publicId}")
+    @Operation(summary = "Buscar veículo por ID", description = "Retorna os detalhes de um veículo específico pelo seu ID público")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Veículo encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Veículo não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
     public ResponseEntity<VehicleResponse> getVehicleById(@PathVariable UUID publicId) {
         Vehicle vehicle = vehicleService.findByPublicId(publicId);
         return ResponseEntity.ok(toResponse(vehicle));
     }
 
     @GetMapping("/plate/{plate}")
+    @Operation(summary = "Buscar veículo por placa", description = "Retorna os detalhes de um veículo específico pela sua placa de identificação")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Veículo encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Veículo não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Placa inválida")
+    })
     public ResponseEntity<VehicleResponse> getVehicleByPlate(@PathVariable String plate) {
         Vehicle vehicle = vehicleService.findByPlate(plate);
         return ResponseEntity.ok(toResponse(vehicle));
     }
 
     @GetMapping("/customer/{customerPublicId}")
+    @Operation(summary = "Listar veículos de um cliente", description = "Retorna uma lista de todos os veículos cadastrados para um cliente específico")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de veículos retornada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID do cliente inválido")
+    })
     public ResponseEntity<List<VehicleResponse>> getVehiclesByCustomer(@PathVariable UUID customerPublicId) {
         List<Vehicle> vehicles = vehicleService.findByCustomerId(customerPublicId);
         List<VehicleResponse> responses = vehicles.stream()
@@ -43,9 +66,15 @@ public class VehicleController {
     }
 
     @PostMapping
+    @Operation(summary = "Criar novo veículo", description = "Cria um novo veículo cadastrado para um cliente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Veículo criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "409", description = "Conflito - Placa já registrada")
+    })
     public ResponseEntity<VehicleResponse> createVehicle(@Valid @RequestBody VehicleCreateRequest request) {
         Vehicle vehicle = vehicleService.create(
-            UUID.fromString(request.getCustomerCpf()), // Você precisará passar o UUID do cliente
+            UUID.fromString(request.getCustomerCpf()),
             request.getPlate(),
             request.getModel(),
             request.getColor(),
@@ -57,6 +86,12 @@ public class VehicleController {
     }
 
     @PutMapping("/{publicId}")
+    @Operation(summary = "Atualizar veículo", description = "Atualiza as informações de um veículo existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Veículo atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Veículo não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     public ResponseEntity<VehicleResponse> updateVehicle(
             @PathVariable UUID publicId,
             @RequestParam(required = false) String plate,
@@ -70,6 +105,12 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{publicId}")
+    @Operation(summary = "Deletar veículo", description = "Remove um veículo do sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Veículo deletado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Veículo não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
     public ResponseEntity<Void> deleteVehicle(@PathVariable UUID publicId) {
         vehicleService.delete(publicId);
         return ResponseEntity.noContent().build();

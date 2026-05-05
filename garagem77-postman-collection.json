@@ -1,0 +1,1799 @@
+{
+  "info": {
+    "_postman_id": "garagem77-api-collection",
+    "name": "Garagem77 API",
+    "description": "CRM SaaS para Lava Jato e Estética Automotiva",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"admin@garagem77.com\", \"password\": \"senha123\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Empresas",
+      "item": [
+        {
+          "name": "Obter empresa por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/{{companyId}}",
+              "host": ["{{base_url}}"],
+              "path": ["companies", "{{companyId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter empresa por slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/slug/garagem-exemplo",
+              "host": ["{{base_url}}"],
+              "path": ["companies", "slug", "garagem-exemplo"]
+            }
+          }
+        },
+        {
+          "name": "Criar empresa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "slug",
+                  "value": "garagem-nova"
+                },
+                {
+                  "key": "name",
+                  "value": "Garagem Nova"
+                },
+                {
+                  "key": "email",
+                  "value": "contato@garagemanva.com"
+                },
+                {
+                  "key": "phone",
+                  "value": "(11) 99999-9999"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/companies",
+              "host": ["{{base_url}}"],
+              "path": ["companies"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar empresa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Garagem Atualizada"
+                },
+                {
+                  "key": "email",
+                  "value": "novo@garagem.com"
+                },
+                {
+                  "key": "phone",
+                  "value": "(11) 98888-8888"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/companies/{{companyId}}",
+              "host": ["{{base_url}}"],
+              "path": ["companies", "{{companyId}}"]
+            }
+          }
+        },
+        {
+          "name": "Alternar status de atividade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/{{companyId}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["companies", "{{companyId}}", "toggle-active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Obter usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter usuário por email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/email/usuario@garagem77.com",
+              "host": ["{{base_url}}"],
+              "path": ["users", "email", "usuario@garagem77.com"]
+            }
+          }
+        },
+        {
+          "name": "Criar usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "novouser@garagem77.com"
+                },
+                {
+                  "key": "password",
+                  "value": "senha123"
+                },
+                {
+                  "key": "name",
+                  "value": "Novo Usuário"
+                },
+                {
+                  "key": "role",
+                  "value": "OPERADOR"
+                },
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Novo Nome"
+                },
+                {
+                  "key": "email",
+                  "value": "novoemail@garagem77.com"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Alterar senha",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "oldPassword",
+                  "value": "senha123"
+                },
+                {
+                  "key": "newPassword",
+                  "value": "novaSenha123"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{userId}}", "change-password"]
+            }
+          }
+        },
+        {
+          "name": "Alternar status de atividade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{userId}}", "toggle-active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Obter cliente por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customers/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["customers", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter cliente por CPF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customers/cpf/12345678900",
+              "host": ["{{base_url}}"],
+              "path": ["customers", "cpf", "12345678900"]
+            }
+          }
+        },
+        {
+          "name": "Buscar cliente por nome",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customers/search?name=João",
+              "host": ["{{base_url}}"],
+              "path": ["customers", "search"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "João"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar todos os clientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customers",
+              "host": ["{{base_url}}"],
+              "path": ["customers"]
+            }
+          }
+        },
+        {
+          "name": "Criar cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cpf\": \"12345678900\", \"name\": \"João Silva\", \"email\": \"joao@example.com\", \"phone\": \"(11) 99999-9999\", \"birthDate\": \"1990-01-15\", \"address\": \"Rua das Flores, 123\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/customers",
+              "host": ["{{base_url}}"],
+              "path": ["customers"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "João Silva Atualizado"
+                },
+                {
+                  "key": "phone",
+                  "value": "(11) 98888-8888"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/customers/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["customers", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customers/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["customers", "{{customerId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Veículos",
+      "item": [
+        {
+          "name": "Obter veículo por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vehicles/{{vehicleId}}",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "{{vehicleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter veículo por placa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vehicles/plate/ABC1234",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "plate", "ABC1234"]
+            }
+          }
+        },
+        {
+          "name": "Listar veículos do cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vehicles/customer/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "customer", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Criar veículo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"customerCpf\": \"{{customerId}}\", \"plate\": \"ABC1234\", \"model\": \"Civic\", \"color\": \"Preto\", \"year\": 2020, \"brand\": \"Honda\", \"observations\": \"Carro em bom estado\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vehicles",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar veículo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vehicles/{{vehicleId}}?plate=XYZ5678&color=Branco",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "{{vehicleId}}"],
+              "query": [
+                {
+                  "key": "plate",
+                  "value": "XYZ5678"
+                },
+                {
+                  "key": "color",
+                  "value": "Branco"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Deletar veículo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vehicles/{{vehicleId}}",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "{{vehicleId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Serviços",
+      "item": [
+        {
+          "name": "Obter serviço por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services/{{serviceId}}",
+              "host": ["{{base_url}}"],
+              "path": ["services", "{{serviceId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter serviço por nome",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services/name/Lavagem Completa",
+              "host": ["{{base_url}}"],
+              "path": ["services", "name", "Lavagem Completa"]
+            }
+          }
+        },
+        {
+          "name": "Buscar serviço por nome",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services/search?name=Lavagem",
+              "host": ["{{base_url}}"],
+              "path": ["services", "search"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Lavagem"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar todos os serviços",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services",
+              "host": ["{{base_url}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Criar serviço",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Lavagem Completa\", \"description\": \"Lavagem externa e interna completa\", \"price\": 150.00, \"durationMinutes\": 60}"
+            },
+            "url": {
+              "raw": "{{base_url}}/services",
+              "host": ["{{base_url}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar serviço",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services/{{serviceId}}?price=180.00&durationMinutes=90",
+              "host": ["{{base_url}}"],
+              "path": ["services", "{{serviceId}}"],
+              "query": [
+                {
+                  "key": "price",
+                  "value": "180.00"
+                },
+                {
+                  "key": "durationMinutes",
+                  "value": "90"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alternar status de atividade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services/{{serviceId}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["services", "{{serviceId}}", "toggle-active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agendamentos",
+      "item": [
+        {
+          "name": "Obter agendamento por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/{{scheduleId}}",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "{{scheduleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar agendamentos do cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/customer/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "customer", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar agendamentos por status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/status/PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "status", "PENDING"]
+            }
+          }
+        },
+        {
+          "name": "Criar agendamento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"customerPublicId\": \"{{customerId}}\", \"vehiclePublicId\": \"{{vehicleId}}\", \"serviceId\": \"{{serviceId}}\", \"scheduledAt\": \"2026-05-15T10:00:00\", \"notes\": \"Cliente preferir manhã\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schedules",
+              "host": ["{{base_url}}"],
+              "path": ["schedules"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar agendamento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/{{scheduleId}}?scheduledAt=2026-05-16T10:00:00&notes=Adiado por cliente",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "{{scheduleId}}"],
+              "query": [
+                {
+                  "key": "scheduledAt",
+                  "value": "2026-05-16T10:00:00"
+                },
+                {
+                  "key": "notes",
+                  "value": "Adiado por cliente"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancelar agendamento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/{{scheduleId}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "{{scheduleId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Marcar como em progresso",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/{{scheduleId}}/in-progress",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "{{scheduleId}}", "in-progress"]
+            }
+          }
+        },
+        {
+          "name": "Completar agendamento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schedules/{{scheduleId}}/complete",
+              "host": ["{{base_url}}"],
+              "path": ["schedules", "{{scheduleId}}", "complete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pedidos",
+      "item": [
+        {
+          "name": "Obter pedido por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar pedidos do cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/customer/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "customer", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar pedidos por status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/status/PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "status", "PENDING"]
+            }
+          }
+        },
+        {
+          "name": "Criar pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"customerPublicId\": \"{{customerId}}\", \"vehiclePublicId\": \"{{vehicleId}}\", \"scheduleId\": \"{{scheduleId}}\", \"notes\": \"Cliente solicitou enceramento\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "Aplicar desconto",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}/apply-discount?discountType=PERCENTAGE&discountValue=10",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "{{orderId}}", "apply-discount"],
+              "query": [
+                {
+                  "key": "discountType",
+                  "value": "PERCENTAGE"
+                },
+                {
+                  "key": "discountValue",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}/status/IN_PROGRESS",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "{{orderId}}", "status", "IN_PROGRESS"]
+            }
+          }
+        },
+        {
+          "name": "Cancelar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "{{orderId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Obter valor total",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}/total",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "{{orderId}}", "total"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pagamentos",
+      "item": [
+        {
+          "name": "Obter pagamento por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/{{paymentId}}",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "{{paymentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar pagamentos do pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/order/{{orderId}}",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "order", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar pagamentos por status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/status/PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "status", "PENDING"]
+            }
+          }
+        },
+        {
+          "name": "Criar pagamento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments?orderPublicId={{orderId}}&paymentMethod=CREDIT_CARD&amount=500.00",
+              "host": ["{{base_url}}"],
+              "path": ["payments"],
+              "query": [
+                {
+                  "key": "orderPublicId",
+                  "value": "{{orderId}}"
+                },
+                {
+                  "key": "paymentMethod",
+                  "value": "CREDIT_CARD"
+                },
+                {
+                  "key": "amount",
+                  "value": "500.00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Completar pagamento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/{{paymentId}}/complete?transactionId=TXN123456",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "{{paymentId}}", "complete"],
+              "query": [
+                {
+                  "key": "transactionId",
+                  "value": "TXN123456"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Falhar pagamento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/{{paymentId}}/fail?reason=Cartão expirado",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "{{paymentId}}", "fail"],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "Cartão expirado"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancelar pagamento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/{{paymentId}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "{{paymentId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Obter total pago",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/order/{{orderId}}/total-paid",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "order", "{{orderId}}", "total-paid"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Produtos",
+      "item": [
+        {
+          "name": "Obter produto por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/{{productId}}",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter produto por SKU",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/sku/SKU001",
+              "host": ["{{base_url}}"],
+              "path": ["products", "sku", "SKU001"]
+            }
+          }
+        },
+        {
+          "name": "Listar todos os produtos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
+            }
+          }
+        },
+        {
+          "name": "Listar produtos em baixo estoque",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/low-stock",
+              "host": ["{{base_url}}"],
+              "path": ["products", "low-stock"]
+            }
+          }
+        },
+        {
+          "name": "Listar produtos sem estoque",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/out-of-stock",
+              "host": ["{{base_url}}"],
+              "path": ["products", "out-of-stock"]
+            }
+          }
+        },
+        {
+          "name": "Criar produto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Shampoo Automotivo\", \"description\": \"Shampoo premium para limpeza de carro\", \"sku\": \"SKU001\", \"unitPrice\": 50.00, \"quantityStock\": 100, \"minimumQuantity\": 10}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar produto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/{{productId}}?unitPrice=55.00&minimumQuantity=15",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{productId}}"],
+              "query": [
+                {
+                  "key": "unitPrice",
+                  "value": "55.00"
+                },
+                {
+                  "key": "minimumQuantity",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Diminuir estoque",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/{{productId}}/decrease-stock?quantity=5",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{productId}}", "decrease-stock"],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Aumentar estoque",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/{{productId}}/increase-stock?quantity=10",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{productId}}", "increase-stock"],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alternar status de atividade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/{{productId}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{productId}}", "toggle-active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Programas de Fidelidade",
+      "item": [
+        {
+          "name": "Obter programa por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-programs/{{programId}}",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-programs", "{{programId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter programa por nome",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-programs/name/Programa Gold",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-programs", "name", "Programa Gold"]
+            }
+          }
+        },
+        {
+          "name": "Obter programa ativo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-programs/active",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-programs", "active"]
+            }
+          }
+        },
+        {
+          "name": "Criar programa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-programs?name=Programa Platina&pointsPerReal=2.5",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-programs"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Programa Platina"
+                },
+                {
+                  "key": "pointsPerReal",
+                  "value": "2.5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar programa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-programs/{{programId}}?pointsPerReal=3.0",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-programs", "{{programId}}"],
+              "query": [
+                {
+                  "key": "pointsPerReal",
+                  "value": "3.0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alternar status de atividade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-programs/{{programId}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-programs", "{{programId}}", "toggle-active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pontos de Fidelidade",
+      "item": [
+        {
+          "name": "Obter pontos por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/{{loyaltyPointId}}",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "{{loyaltyPointId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter pontos do cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/customer/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "customer", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obter total de pontos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/customer/{{customerId}}/total",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "customer", "{{customerId}}", "total"]
+            }
+          }
+        },
+        {
+          "name": "Criar ou obter pontos para cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/customer/{{customerId}}",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "customer", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Adicionar pontos",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/customer/{{customerId}}/add-points?points=100",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "customer", "{{customerId}}", "add-points"],
+              "query": [
+                {
+                  "key": "points",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Resgatar pontos",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/customer/{{customerId}}/redeem-points?points=50",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "customer", "{{customerId}}", "redeem-points"],
+              "query": [
+                {
+                  "key": "points",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar pontos ativos do cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/loyalty-points/customer/{{customerId}}/active",
+              "host": ["{{base_url}}"],
+              "path": ["loyalty-points", "customer", "{{customerId}}", "active"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "companyId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vehicleId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "serviceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "scheduleId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "programId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "loyaltyPointId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

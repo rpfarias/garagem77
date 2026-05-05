@@ -4,6 +4,10 @@ import com.garagem77.inventory.dto.ProductCreateRequest;
 import com.garagem77.inventory.dto.ProductResponse;
 import com.garagem77.inventory.entity.Product;
 import com.garagem77.inventory.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,23 +21,41 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
+@Tag(name = "Produtos", description = "Gerenciamento de produtos do inventário")
 public class ProductController {
 
     private final ProductService productService;
 
     @GetMapping("/{publicId}")
+    @Operation(summary = "Buscar produto por ID", description = "Retorna os detalhes de um produto específico pelo seu ID público")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
     public ResponseEntity<ProductResponse> getProductById(@PathVariable UUID publicId) {
         Product product = productService.findByPublicId(publicId);
         return ResponseEntity.ok(toResponse(product));
     }
 
     @GetMapping("/sku/{sku}")
+    @Operation(summary = "Buscar produto por SKU", description = "Retorna um produto específico pelo seu código SKU")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @ApiResponse(responseCode = "400", description = "SKU inválido")
+    })
     public ResponseEntity<ProductResponse> getProductBySku(@PathVariable String sku) {
         Product product = productService.findBySku(sku);
         return ResponseEntity.ok(toResponse(product));
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos os produtos", description = "Retorna uma lista com todos os produtos cadastrados no inventário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de produtos retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
+    })
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<Product> products = productService.findAll();
         List<ProductResponse> responses = products.stream()
@@ -43,6 +65,11 @@ public class ProductController {
     }
 
     @GetMapping("/low-stock")
+    @Operation(summary = "Listar produtos com baixo estoque", description = "Retorna uma lista de produtos cuja quantidade está abaixo do mínimo especificado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de produtos com baixo estoque retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
+    })
     public ResponseEntity<List<ProductResponse>> getLowStockProducts() {
         List<Product> products = productService.findLowStock();
         List<ProductResponse> responses = products.stream()
@@ -52,6 +79,11 @@ public class ProductController {
     }
 
     @GetMapping("/out-of-stock")
+    @Operation(summary = "Listar produtos fora de estoque", description = "Retorna uma lista de produtos sem quantidade disponível")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de produtos fora de estoque retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
+    })
     public ResponseEntity<List<ProductResponse>> getOutOfStockProducts() {
         List<Product> products = productService.findOutOfStock();
         List<ProductResponse> responses = products.stream()
@@ -61,6 +93,12 @@ public class ProductController {
     }
 
     @PostMapping
+    @Operation(summary = "Criar novo produto", description = "Cria um novo produto no inventário com as informações fornecidas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Produto criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "409", description = "Conflito - SKU já registrado")
+    })
     public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest request) {
         Product product = productService.create(
             request.getName(),
@@ -74,6 +112,12 @@ public class ProductController {
     }
 
     @PutMapping("/{publicId}")
+    @Operation(summary = "Atualizar produto", description = "Atualiza as informações de um produto existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable UUID publicId,
             @RequestParam(required = false) String name,
@@ -86,6 +130,12 @@ public class ProductController {
     }
 
     @PatchMapping("/{publicId}/decrease-stock")
+    @Operation(summary = "Diminuir estoque do produto", description = "Reduz a quantidade em estoque de um produto")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Estoque reduzido com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Quantidade inválida ou quantidade insuficiente")
+    })
     public ResponseEntity<Void> decreaseStock(
             @PathVariable UUID publicId,
             @RequestParam Integer quantity) {
@@ -94,6 +144,12 @@ public class ProductController {
     }
 
     @PatchMapping("/{publicId}/increase-stock")
+    @Operation(summary = "Aumentar estoque do produto", description = "Aumenta a quantidade em estoque de um produto")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Estoque aumentado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Quantidade inválida")
+    })
     public ResponseEntity<Void> increaseStock(
             @PathVariable UUID publicId,
             @RequestParam Integer quantity) {
@@ -102,6 +158,12 @@ public class ProductController {
     }
 
     @PatchMapping("/{publicId}/toggle-active")
+    @Operation(summary = "Alternar status ativo/inativo do produto", description = "Ativa ou desativa um produto no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Status do produto alterado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
     public ResponseEntity<Void> toggleActive(@PathVariable UUID publicId) {
         productService.toggleActive(publicId);
         return ResponseEntity.noContent().build();
