@@ -59,7 +59,7 @@ public class VehicleService {
             .plate(plate)
             .model(model)
             .color(color)
-            .year(year)
+            .modelYear(year)
             .brand(brand)
             .observations(observations)
             .active(true)
@@ -83,7 +83,7 @@ public class VehicleService {
 
         if (model != null) vehicle.setModel(model);
         if (color != null) vehicle.setColor(color);
-        if (year != null) vehicle.setYear(year);
+        if (year != null) vehicle.setModelYear(year);
         if (brand != null) vehicle.setBrand(brand);
         if (observations != null) vehicle.setObservations(observations);
 

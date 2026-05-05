@@ -32,8 +32,8 @@ public class Vehicle extends BaseEntity {
     @Column(length = 100)
     private String color;
 
-    @Column
-    private Integer year;
+    @Column(name = "model_year")
+    private Integer modelYear;
 
     @Column(length = 100)
     private String brand;

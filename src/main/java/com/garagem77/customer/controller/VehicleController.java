@@ -81,7 +81,7 @@ public class VehicleController {
             .plate(vehicle.getPlate())
             .model(vehicle.getModel())
             .color(vehicle.getColor())
-            .year(vehicle.getYear())
+            .year(vehicle.getModelYear())
             .brand(vehicle.getBrand())
             .observations(vehicle.getObservations())
             .active(vehicle.getActive())

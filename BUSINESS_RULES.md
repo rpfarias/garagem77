@@ -1,193 +1,243 @@
 # Regras de Negócio - Garagem77 CRM
 
-## 1. CUSTOMER (Clientes)
+## 1. Autenticação e Autorização
 
-- ✅ CPF deve ser único no sistema
-- ✅ CPF deve ter exatamente 11 dígitos numéricos
-- ✅ Email é opcional mas, se fornecido, deve ser válido
-- ✅ Telefone é obrigatório
-- ✅ Não pode deletar cliente que tem veículos ativos
-- ✅ Não pode deletar cliente que tem agendamentos/ordens em aberto
+### 1.1 Usuários e Roles
+- **SUPER_ADMIN**: Acesso total à plataforma (gerencia tenants, planos)
+- **ADMIN**: Dono da empresa/tenant (gerencia usuários e dados da empresa)
+- **OPERADOR**: Funcionário (acesso restrito conforme módulo)
 
-## 2. VEHICLE (Veículos)
+### 1.2 JWT Token
+- Expiração: 24 horas (86400000ms)
+- Algoritmo: HS512
+- Claims armazenados: email, userId, userPublicId, role, companyId
+- Obrigatório em todas as requisições (exceto login, cadastro de empresas, endpoints públicos)
 
-- ✅ Placa deve ser única no sistema
-- ✅ Placa deve ter 7-10 caracteres (formato brasileiro)
-- ✅ Um cliente pode ter múltiplos veículos
-- ✅ Não pode deletar veículo com agendamentos em aberto
-- ✅ Não pode deletar veículo com ordens em aberto
-- ✅ Ao deletar cliente, deletar todos seus veículos (cascade)
-
-## 3. SERVICE (Serviços/Catálogo)
-
-- ✅ Nome deve ser único por empresa
-- ✅ Preço deve ser > 0
-- ✅ Duração é opcional mas recomendada
-- ✅ Pode estar ativo/inativo
-- ✅ Não pode deletar serviço que está em ordens/agendamentos
-
-## 4. SCHEDULE (Agendamentos)
-
-- ✅ Não pode agendar em data/hora passada
-- ✅ Não pode agendar 2x o mesmo cliente + veículo + serviço no mesmo horário
-- ✅ Cliente e veículo devem existir
-- ✅ Serviço deve existir
-- ✅ Status: SCHEDULED → COMPLETED ou CANCELLED
-- ✅ Ao converter em Ordem, status muda para IN_PROGRESS
-- ✅ Não pode cancelar agendamento com ordem em andamento
-- ✅ Aviso: se horário + duração do serviço ultrapassar limite do dia (ex: 18h)
-
-## 5. ORDER (Ordem de Serviço)
-
-- ✅ Deve ter pelo menos 1 item (serviço OU produto)
-- ✅ Total = SUM(orderItems.subtotal) - discountAmount
-- ✅ Desconto não pode ser maior que o total
-- ✅ Status: PENDING → IN_PROGRESS → COMPLETED ou CANCELLED
-- ✅ Não pode editar ordem COMPLETED ou CANCELLED
-- ✅ Ao criar ordem, cria automaticamente entry de LoyaltyTransaction (se cliente tem programa)
-- ✅ Não pode cancelar ordem com pagamentos COMPLETED
-
-## 6. ORDER ITEM (Itens da Ordem)
-
-- ✅ Deve ter OU serviceId OU productId (pelo menos um)
-- ✅ Subtotal = quantity × unitPrice
-- ✅ Preço não pode ser negativo
-- ✅ Quantidade mínima = 1
-- ✅ Se usar produto, decrementa automaticamente do estoque
-- ✅ Se não tiver estoque suficiente, retorna erro (ou permite venda com alerta?)
-
-## 7. PAYMENT (Pagamentos)
-
-- ✅ Uma ordem pode ter múltiplos pagamentos (ex: dinheiro + PIX)
-- ✅ SUM(payments.amount) NÃO pode ultrapassar order.finalAmount
-- ✅ Status: PENDING → COMPLETED ou FAILED ou CANCELLED
-- ✅ TransactionId deve ser único (evitar duplicação)
-- ✅ Métodos aceitos: PIX, DINHEIRO, CARTAO_CREDITO, CARTAO_DEBITO
-- ✅ Quando SUM(payments COMPLETED) = order.finalAmount → order.status = COMPLETED
-- ✅ Não pode deletar payment COMPLETED
-
-## 8. PRODUCT (Produtos/Insumos)
-
-- ✅ SKU deve ser único
-- ✅ Preço > 0
-- ✅ Quantidade não pode ser negativa
-- ✅ Alerta: quando quantityStock < minimumQuantity
-- ✅ Histórico de movimentações rastreável
-- ✅ Pode estar ativo/inativo
-
-## 9. PRODUCT MOVEMENT (Movimentação de Estoque)
-
-- ✅ Tipos: ENTRADA, SAÍDA
-- ✅ ENTRADA: aumenta quantityStock do produto
-- ✅ SAÍDA: diminui quantityStock do produto
-  - ⚠️ Não pode fazer SAÍDA se quantityStock < quantidade solicitada
-- ✅ ReferenceId pode ser orderId (rastreamento)
-- ✅ Histórico completo e imutável (não pode editar/deletar)
-
-## 10. LOYALTY PROGRAM (Programa de Fidelidade)
-
-- ✅ Um programa por empresa
-- ✅ PointsPerReal padrão = 1.0 (1 ponto por real gasto)
-- ✅ Pode estar ativo/inativo
-- ✅ Ao desativar, customers continuam com saldo mas não ganham mais pontos
-
-## 11. LOYALTY POINT (Saldo de Pontos)
-
-- ✅ Um registro por cliente + programa
-- ✅ Pontos nunca podem ser negativos
-- ✅ Historicamente rastreável via LoyaltyTransaction
-- ✅ SUM(transactions EARN) - SUM(transactions REDEEM) = pointsBalance
-
-## 12. LOYALTY TRANSACTION (Histórico de Pontos)
-
-- ✅ Tipos: EARN (ganho), REDEEM (resgate)
-- ✅ EARN: 
-  - Automático ao criar/completar Order
-  - Pontos = order.finalAmount × program.pointsPerReal
-- ✅ REDEEM:
-  - Manual ou automático (depende do fluxo de cupom)
-  - Não pode resgatar mais pontos que tem disponível
-- ✅ OrderId linkado (rastreamento de que ordem gerou pontos)
-- ✅ Histórico imutável
+### 1.3 Acesso por Tenant
+- Cada usuário está vinculado a um único tenant (empresa)
+- Dados de um tenant nunca podem ser acessados por outro tenant
+- Validação deve ocorrer em cada requisição
 
 ---
 
-## Fluxos Principais
+## 2. Clientes e Veículos
 
-### Fluxo 1: Agendamento → Ordem → Pagamento
-```
-1. Cliente agenda serviço
-   Schedule (SCHEDULED) criado
-   
-2. Operário executa serviço
-   Schedule → IN_PROGRESS
-   Ordem criada
-   Ordem → IN_PROGRESS
-   
-3. Serviço concluído
-   Ordem → PENDING (aguarda pagamento)
-   Schedule → COMPLETED
-   
-4. Cliente paga
-   Payment criado
-   Se SUM(payments) == order.finalAmount → Ordem → COMPLETED
-   LoyaltyTransaction EARN criado
-```
+### 2.1 Cliente
+- CPF deve ser único por tenant
+- CPF deve ter exatamente 11 dígitos (sem máscara)
+- Email é opcional mas recomendado para contato
+- Telefone é obrigatório
+- Campo `active` controla se cliente pode receber agendamentos
+- **Regra**: Cliente com veículos NÃO pode ser deletado (apenas desativado)
 
-### Fluxo 2: Controle de Estoque
-```
-1. Produto criado com quantityStock = 100
-2. Ordem criada com 5 unidades do produto
-   ProductMovement (SAÍDA) = -5
-   Product.quantityStock = 95
-3. Se quantityStock < minimumQuantity → Alerta
-4. Entrada de estoque
-   ProductMovement (ENTRADA) = +20
-   Product.quantityStock = 115
-```
-
-### Fluxo 3: Fidelidade
-```
-1. Ordem com finalAmount = R$ 100
-2. LoyaltyPoint (customerId, programId)
-3. LoyaltyTransaction EARN criado
-   pointsValue = 100 × 1.0 = 100 pontos
-4. LoyaltyPoint.pointsBalance += 100
-```
+### 2.2 Veículo
+- Placa deve ser única por tenant
+- Placa: formato padrão brasileiro (ABC-1234)
+- Modelo é obrigatório
+- Cor é opcional
+- Ano do modelo (modelYear) é opcional
+- Marca é opcional
+- Observações: campo livre para anotações
+- **Regra**: Um cliente pode ter múltiplos veículos
+- **Regra**: Veículos devem estar associados a um cliente ativo
 
 ---
 
-## Validações e Exceções
+## 3. Serviços (Catálogo)
 
-| Exceção | Quando | Ação |
-|---------|--------|------|
-| `DuplicateCpfException` | CPF já existe | Retornar 409 Conflict |
-| `DuplicatePlateException` | Placa já existe | Retornar 409 Conflict |
-| `ScheduleInPastException` | Agendar data passada | Retornar 400 Bad Request |
-| `InsufficientStockException` | Não tem estoque | Retornar 400 Bad Request |
-| `OrderNotEditableException` | Tentar editar COMPLETED/CANCELLED | Retornar 400 Bad Request |
-| `ExceedsOrderAmountException` | Payment > order.finalAmount | Retornar 400 Bad Request |
-| `InsufficientLoyaltyPointsException` | Tentar resgatar > balance | Retornar 400 Bad Request |
-| `DependentRecordsException` | Deletar com dependências | Retornar 400 Bad Request |
+### 3.1 Definição
+- Nome deve ser único por tenant
+- Preço deve ser maior que 0
+- Duração em minutos (opcional, para controle de agenda)
+- Descrição é opcional
+- Campo `active` controla disponibilidade para novos agendamentos
+- **Regra**: Serviço com preço zerado ou negativo é rejeitado
+- **Regra**: Serviço pode ser desativado sem afetar agendamentos históricos
 
 ---
 
-## Decisões Confirmadas ✅
+## 4. Agendamentos
 
-1. ✅ **OrderItem com quantidade > 1**: SIM - permite quantidade > 1 do mesmo produto
-2. ✅ **Venda sem estoque**: SÓ ALERTA - não bloqueia a venda, apenas avisa
-3. ✅ **Múltiplos pagamentos**: SIM - permite PIX + Dinheiro na mesma ordem
-4. ✅ **Tipo de desconto**: OPÇÃO - FIXED (R$) ou PERCENTAGE (%)
-5. ✅ **Cancelamento pós-pagamento**: SIM - permite cancelar order mesmo com payment COMPLETED
-6. ✅ **Agendamentos simultâneos**: SIM - permite múltiplos agendamentos no mesmo horário
+### 4.1 Status de Agendamento
+- **SCHEDULED**: Agendado, aguardando execução
+- **IN_PROGRESS**: Em execução
+- **COMPLETED**: Finalizado
+- **CANCELLED**: Cancelado
+
+### 4.2 Regras
+- Data/hora do agendamento deve ser no futuro
+- Um cliente pode ter múltiplos agendamentos simultâneos (mesmo horário)
+- Um veículo pode ter múltiplos agendamentos simultâneos
+- **Regra**: Transição permitida: SCHEDULED → IN_PROGRESS → COMPLETED
+- **Regra**: SCHEDULED ou IN_PROGRESS podem ser cancelados → CANCELLED
+- **Regra**: Agendamento COMPLETED ou CANCELLED não pode ser alterado
+- **Regra**: Ao criar OS a partir de agendamento, agendamento passa para IN_PROGRESS automaticamente
 
 ---
 
-## Status esperados para cada entidade
+## 5. Ordem de Serviço (OS)
 
-```
-Schedule:  SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
-Order:     PENDING, IN_PROGRESS, COMPLETED, CANCELLED
-Payment:   PENDING, COMPLETED, FAILED, CANCELLED
-LoyaltyTx: EARN, REDEEM (não é status, é tipo)
-```
+### 5.1 Status da OS
+- **PENDING**: Aguardando execução
+- **IN_PROGRESS**: Em execução
+- **COMPLETED**: Finalizada
+- **CANCELLED**: Cancelada
+
+### 5.2 Estrutura
+- Uma OS pode ter múltiplos itens (OrderItem)
+- Cada item contém: serviço OU produto (não obrigatoriamente ambos)
+- Quantidade mínima por item: 1
+- **Regra**: Total é calculado automaticamente = soma(quantidade × preço_unitário) - desconto
+
+### 5.3 Itens da OS
+- **Serviço**: quantidade = 1 (padrão), preço = preço_do_serviço
+- **Produto**: quantidade ≥ 1, preço = preço_unitário × quantidade
+- **Regra**: Aviso se tentar vender produto sem estoque (mas permite a venda)
+- **Aviso**: Estoque deve ser decrementado ao adicionar item com produto
+- **Regra**: Estoque pode ir negativo (venda sem cobertura permite-se com aviso)
+
+### 5.4 Desconto
+- Dois tipos: **FIXED** (valor fixo) ou **PERCENTAGE** (percentual)
+- Desconto não pode ser maior que total da OS
+- Desconto percentual: 0-100%
+- **Regra**: Desconto é validado antes de calcular finalAmount
+- finalAmount = total - desconto
+
+### 5.5 Transições de Status
+- PENDING → IN_PROGRESS → COMPLETED
+- Qualquer status anterior → CANCELLED (se nenhum pagamento foi processado)
+- **Regra**: OS COMPLETED ou CANCELLED não pode receber novos itens
+- **Regra**: OS não pode ser CANCELLED se já tem pagamento PAID
+
+### 5.6 Relacionamentos
+- Vinculada a: 1 Cliente, 1 Veículo
+- Pode ter: 1 Agendamento (origem) ou nenhum (OS avulsa)
+
+---
+
+## 6. Pagamentos
+
+### 6.1 Métodos de Pagamento
+- **PIX**: Transferência imediata
+- **DINHEIRO**: Pagamento em espécie
+- **CARTAO_CREDITO**: Cartão de crédito
+- **CARTAO_DEBITO**: Cartão de débito
+
+### 6.2 Status do Pagamento
+- **PENDING**: Aguardando processamento
+- **PAID**: Processado com sucesso
+- **FAILED**: Falhou na processamento
+- **CANCELLED**: Cancelado
+
+### 6.3 Regras
+- Valor do pagamento ≤ valor_ainda_devido_na_OS
+- **Múltiplos pagamentos** são permitidos para uma mesma OS
+- **Regra**: Quando soma(pagamentos PAID) = total_OS → OS passa para COMPLETED automaticamente
+- **Regra**: Pagamento PAID não pode ser revertido (apenas cancelado após criação)
+- **Regra**: Data do pagamento deve ser ≤ data atual
+- transaction_id é opcional (para referência de integração com gateway)
+
+### 6.4 Cálculos
+- Valor_devido = total - soma(pagamentos anteriores PAID)
+- OS está **quitada** quando: soma(PAID) = finalAmount
+
+---
+
+## 7. Produtos e Estoque
+
+### 7.1 Produto
+- SKU deve ser único por tenant
+- Preço unitário > 0
+- Quantidade em estoque pode ser negativa
+- Quantidade mínima para alerta (minimumQuantity)
+- **Regra**: Produto com preço ≤ 0 é rejeitado
+- Campo `active` controla se pode ser usado em novas OS
+
+### 7.2 Movimentações de Estoque
+- Tipo: **ENTRADA** (compra, devolução) ou **SAÍDA** (venda, quebra)
+- reference_id: referência para qual OS/transação relacionada
+- Notas: campo livre para comentários
+- **Regra**: Movimentação é imutável (não pode ser editada, apenas consultada)
+- **Regra**: Estoque final = estoque_inicial + entradas - saídas
+
+### 7.3 Alertas de Estoque
+- Se quantidade < minimumQuantity → Gerar alerta
+- Alerta é informativo, não bloqueia venda
+
+---
+
+## 8. Programa de Fidelidade (Loyalty)
+
+### 8.1 Programa
+- Um programa de fidelidade por tenant
+- Apenas **um programa ativo** por vez
+- Taxa: pontos por real gasto (ex: 1 ponto = 1 real)
+- **Regra**: Ao ativar novo programa, programa anterior é desativado
+
+### 8.2 Pontos do Cliente
+- Acúmulo: para cada OS COMPLETED, adicionar pontos = finalAmount × taxa
+- Pontos são saldo (não expiram)
+- **Regra**: Resgate de pontos deve ter saldo suficiente
+
+### 8.3 Histórico de Transações
+- **EARN**: Ganho de pontos (ao completar OS)
+- **REDEEM**: Resgate de pontos (manualmente por operador)
+- Cada transação é imutável
+- Descrição: campo livre para contexto
+
+### 8.4 Configuração
+- Ativar/desativar programa não afeta pontos existentes
+- Mudança de taxa só afeta novos pontos
+
+---
+
+## 9. Multi-Tenancy
+
+### 9.1 Isolamento
+- Cada tenant tem schema PostgreSQL próprio
+- Dados públicos (tenants, users) em schema `public`
+- Dados operacionais em schema `tenant_{slug}`
+
+### 9.2 Validação
+- Toda requisição deve incluir tenant_id (via token JWT)
+- Validar que usuário pertence ao tenant antes de acessar dados
+- Erro 403 se acesso negado
+
+---
+
+## 10. Validações Gerais
+
+### 10.1 Datas
+- Data futura: agendamento, data da OS
+- Data passada ou presente: pagamento, movimentação
+
+### 10.2 CPF
+- Exatamente 11 dígitos
+- Sem máscara
+- Único por tenant
+
+### 10.3 Placa
+- Formato: ABC-1234 (3 letras, hífen, 4 números)
+- Único por tenant
+
+### 10.4 Email
+- Formato válido (RFC 5322 básico)
+- Único por tenant (usuários)
+
+---
+
+## 11. Respostas de Erro
+
+### Códigos HTTP
+- **400**: Violação de regra de negócio (BusinessRuleException)
+- **404**: Recurso não encontrado (ResourceNotFoundException)
+- **409**: Conflito, recurso duplicado (DuplicateResourceException)
+- **401**: Não autorizado, JWT inválido/ausente
+- **403**: Acesso proibido (tenant diferente)
+- **500**: Erro interno
+
+---
+
+**Versão**: 1.0  
+**Data**: 2026-05-05  
+**Status**: Documentado
