@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Claude Code - Skills & Agents (Local Development Only) ###
+.claude/
+!.claude/.gitkeep
