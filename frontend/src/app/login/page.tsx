@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
@@ -9,7 +8,6 @@ import { Card, CardBody, CardHeader } from '@/components/Card';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
-  const router = useRouter();
   const { login, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,7 +42,6 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast.success('Login realizado com sucesso!');
-      router.push('/dashboard');
     } catch (error: any) {
       const message =
         error.response?.data?.message || 'Falha ao fazer login. Verifique suas credenciais.';
