@@ -1,48 +1,88 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
+import { CloseIcon } from './Icons';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  description?: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  description,
+  children,
+  size = 'md',
+}: ModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'w-full max-w-sm',
-    md: 'w-full max-w-md',
-    lg: 'w-full max-w-lg',
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-2xl',
   };
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn"
       onClick={onClose}
     >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+
+      {/* Modal */}
       <div
-        className={clsx('bg-white rounded-lg shadow-xl', sizeClasses[size])}
+        className={clsx(
+          'relative w-full bg-white rounded-2xl shadow-modal animate-scaleIn',
+          sizeClasses[size]
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+        <div className="flex items-start justify-between gap-4 p-6 pb-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-semibold text-slate-900 leading-tight">{title}</h2>
+            {description && (
+              <p className="mt-1 text-sm text-slate-500">{description}</p>
+            )}
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors p-1"
+            className="p-1.5 -m-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
             aria-label="Fechar"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <CloseIcon className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">{children}</div>
+        <div className="px-6 pb-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          {children}
+        </div>
       </div>
     </div>
   );

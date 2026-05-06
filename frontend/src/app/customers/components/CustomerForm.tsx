@@ -50,10 +50,8 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
       newErrors.email = 'Email inválido';
     }
 
-    if (!isEditing) {
-      if (!formData.cpf.trim()) {
-        newErrors.cpf = 'CPF é obrigatório';
-      }
+    if (!isEditing && !formData.cpf.trim()) {
+      newErrors.cpf = 'CPF é obrigatório';
     }
 
     setErrors(newErrors);
@@ -65,19 +63,16 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
+        const next = { ...prev };
+        delete next[name];
+        return next;
       });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
     try {
@@ -111,64 +106,78 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Nome *"
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        error={errors.name}
-        disabled={isLoading}
-      />
-
-      <Input
-        label="Email *"
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        error={errors.email}
-        disabled={isLoading}
-      />
-
-      {!isEditing && (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-4">
         <Input
-          label="CPF *"
+          label="Nome completo"
           type="text"
-          name="cpf"
-          value={formData.cpf}
+          name="name"
+          placeholder="João da Silva"
+          value={formData.name}
           onChange={handleChange}
-          error={errors.cpf}
+          error={errors.name}
           disabled={isLoading}
-          helpText="Somente no cadastro"
         />
-      )}
 
-      <Input
-        label="Telefone"
-        type="text"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        disabled={isLoading}
-      />
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          placeholder="cliente@email.com"
+          value={formData.email}
+          onChange={handleChange}
+          error={errors.email}
+          disabled={isLoading}
+        />
 
-      <Input
-        label="Endereço"
-        type="text"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-        disabled={isLoading}
-      />
+        {!isEditing && (
+          <Input
+            label="CPF"
+            type="text"
+            name="cpf"
+            placeholder="000.000.000-00"
+            value={formData.cpf}
+            onChange={handleChange}
+            error={errors.cpf}
+            disabled={isLoading}
+            helpText="Apenas números ou com pontuação"
+          />
+        )}
 
-      <div className="flex gap-3 pt-4">
-        <Button type="submit" variant="primary" isLoading={isLoading} fullWidth>
-          {isEditing ? 'Atualizar' : 'Criar'}
-        </Button>
-        <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading} fullWidth>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Telefone"
+            type="text"
+            name="phone"
+            placeholder="(11) 99999-9999"
+            value={formData.phone}
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+
+          <Input
+            label="Endereço"
+            type="text"
+            name="address"
+            placeholder="Rua, número"
+            value={formData.address}
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
           Cancelar
+        </Button>
+        <Button type="submit" variant="primary" isLoading={isLoading}>
+          {isEditing ? 'Salvar alterações' : 'Criar cliente'}
         </Button>
       </div>
     </form>
