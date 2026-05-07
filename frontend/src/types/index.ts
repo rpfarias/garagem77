@@ -169,6 +169,53 @@ export interface CreateScheduleDTO {
   notes?: string;
 }
 
+// Pedidos / Ordens de Serviço
+export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+export interface OrderItem {
+  id: string;
+  servicePublicId?: string;
+  serviceName?: string;
+  productPublicId?: string;
+  productName?: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export interface Order {
+  id: string;
+  schedulePublicId?: string;
+  customerPublicId?: string;
+  customerName?: string;
+  vehiclePublicId?: string;
+  vehiclePlate?: string;
+  vehicleModel?: string;
+  status: OrderStatus;
+  totalAmount: number;
+  discountAmount: number;
+  finalAmount: number;
+  notes?: string;
+  items: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateOrderItemDTO {
+  serviceId?: string;
+  productId?: string;
+  quantity: number;
+  unitPrice?: number;
+}
+
+export interface CreateOrderDTO {
+  scheduleId?: string;
+  customerId: string;
+  vehicleId: string;
+  items: CreateOrderItemDTO[];
+  notes?: string;
+}
+
 // Reports / Analytics
 export interface DashboardSummary {
   totalCustomers: number;

@@ -22,15 +22,16 @@ public class OrderResponse {
     private UUID schedulePublicId;
 
     private UUID customerPublicId;
+    private String customerName;
 
     private UUID vehiclePublicId;
+    private String vehiclePlate;
+    private String vehicleModel;
 
     private String status;
 
     private BigDecimal totalAmount;
-
     private BigDecimal discountAmount;
-
     private BigDecimal finalAmount;
 
     private String notes;
@@ -38,6 +39,5 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }

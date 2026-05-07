@@ -19,6 +19,7 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   '/vehicles': { title: 'Veículos', description: 'Cadastro de veículos dos clientes' },
   '/services': { title: 'Serviços', description: 'Catálogo de serviços oferecidos' },
   '/schedules': { title: 'Agendamentos', description: 'Agenda e ordens de serviço' },
+  '/orders': { title: 'Pedidos', description: 'Ordens de serviço com itens e cobrança' },
   '/products': { title: 'Produtos', description: 'Estoque e produtos' },
   '/reports': { title: 'Relatórios', description: 'Análises e relatórios' },
   '/settings': { title: 'Configurações', description: 'Preferências do sistema' },

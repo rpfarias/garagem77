@@ -10,10 +10,15 @@ import com.garagem77.order.repository.OrderItemRepository;
 import com.garagem77.order.repository.OrderRepository;
 import com.garagem77.scheduling.entity.Schedule;
 import com.garagem77.scheduling.repository.ScheduleRepository;
+import com.garagem77.service.repository.ServiceRepository;
+import com.garagem77.inventory.entity.Product;
+import com.garagem77.inventory.repository.ProductRepository;
 import com.garagem77.shared.exception.BusinessRuleException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +37,8 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final VehicleRepository vehicleRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ServiceRepository serviceRepository;
+    private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
     public Order findByPublicId(UUID publicId) {
@@ -50,6 +57,111 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<Order> findByStatus(String status) {
         return orderRepository.findByStatus(status);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Order> findAllPaged(Pageable pageable) {
+        return orderRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Order> findByStatusPaged(String status, Pageable pageable) {
+        return orderRepository.findByStatus(status, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Vehicle getVehicleById(Long id) {
+        return vehicleRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderItem> getItemsByOrder(Long orderId) {
+        return orderItemRepository.findByOrderId(orderId);
+    }
+
+    @Transactional(readOnly = true)
+    public com.garagem77.service.entity.Service getServiceById(Long id) {
+        return serviceRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public com.garagem77.service.entity.Service getServiceByPublicId(UUID publicId) {
+        return serviceRepository.findByPublicId(publicId).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Product getProductById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Product getProductByPublicId(UUID publicId) {
+        return productRepository.findByPublicId(publicId).orElse(null);
+    }
+
+    public OrderItem buildAndAddItem(UUID orderPublicId, UUID servicePublicId, UUID productPublicId,
+                                      Integer quantity, BigDecimal unitPrice) {
+        Order order = findByPublicId(orderPublicId);
+        if (order.getStatus().equals("COMPLETED") || order.getStatus().equals("CANCELLED")) {
+            throw new BusinessRuleException("Não é possível adicionar itens a ordem finalizada");
+        }
+
+        Long serviceId = null;
+        Long productId = null;
+        if (servicePublicId != null) {
+            com.garagem77.service.entity.Service svc = getServiceByPublicId(servicePublicId);
+            if (svc == null) throw new ResourceNotFoundException("Serviço não encontrado: " + servicePublicId);
+            serviceId = svc.getId();
+            if (unitPrice == null) unitPrice = svc.getPrice();
+        }
+        if (productPublicId != null) {
+            Product prod = getProductByPublicId(productPublicId);
+            if (prod == null) throw new ResourceNotFoundException("Produto não encontrado: " + productPublicId);
+            productId = prod.getId();
+            if (unitPrice == null) unitPrice = prod.getUnitPrice();
+        }
+
+        BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+
+        OrderItem item = OrderItem.builder()
+            .orderId(order.getId())
+            .serviceId(serviceId)
+            .productId(productId)
+            .quantity(quantity)
+            .unitPrice(unitPrice)
+            .subtotal(subtotal)
+            .build();
+
+        OrderItem saved = orderItemRepository.save(item);
+        recalculateTotal(orderPublicId);
+        log.info("Item adicionado à ordem {}: subtotal R$ {}", orderPublicId, subtotal);
+        return saved;
+    }
+
+    public void removeItem(UUID orderPublicId, Long itemId) {
+        Order order = findByPublicId(orderPublicId);
+        if (order.getStatus().equals("COMPLETED") || order.getStatus().equals("CANCELLED")) {
+            throw new BusinessRuleException("Não é possível remover itens de ordem finalizada");
+        }
+        OrderItem item = orderItemRepository.findById(itemId)
+            .orElseThrow(() -> new ResourceNotFoundException("Item não encontrado: " + itemId));
+        orderItemRepository.delete(item);
+        recalculateTotal(orderPublicId);
+        log.info("Item removido da ordem: {}", orderPublicId);
+    }
+
+    public void delete(UUID publicId) {
+        Order order = findByPublicId(publicId);
+        // Delete items first
+        List<OrderItem> items = orderItemRepository.findByOrderId(order.getId());
+        items.forEach(orderItemRepository::delete);
+        orderRepository.delete(order);
+        log.info("Ordem removida: {}", publicId);
     }
 
     public Order create(UUID customerPublicId, UUID vehiclePublicId, UUID schedulePublicId, String notes, String discountType, BigDecimal discountValue) {

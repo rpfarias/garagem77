@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -19,11 +21,11 @@ public class OrderCreateRequest {
 
     private UUID scheduleId;
 
-    @NotEmpty(message = "CPF do cliente não pode estar vazio")
-    private String customerCpf;
+    @NotNull(message = "ID do cliente não pode estar vazio")
+    private UUID customerId;
 
-    @NotEmpty(message = "Placa do veículo não pode estar vazia")
-    private String vehiclePlate;
+    @NotNull(message = "ID do veículo não pode estar vazio")
+    private UUID vehicleId;
 
     @NotEmpty(message = "Itens não podem estar vazios")
     private List<OrderItemRequest> items;

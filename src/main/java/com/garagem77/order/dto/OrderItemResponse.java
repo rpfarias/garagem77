@@ -18,12 +18,12 @@ public class OrderItemResponse {
     private UUID id;
 
     private UUID servicePublicId;
+    private String serviceName;
 
     private UUID productPublicId;
+    private String productName;
 
     private Integer quantity;
-
     private BigDecimal unitPrice;
-
     private BigDecimal subtotal;
 }

@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
   { href: '/vehicles', label: 'Veículos', icon: <CarIcon /> },
   { href: '/services', label: 'Serviços', icon: <WrenchIcon /> },
   { href: '/schedules', label: 'Agendamentos', icon: <CalendarIcon /> },
+  { href: '/orders', label: 'Pedidos', icon: <PackageIcon /> },
   { href: '/products', label: 'Produtos', icon: <PackageIcon /> },
   { href: '/reports', label: 'Relatórios', icon: <ChartIcon /> },
 ];

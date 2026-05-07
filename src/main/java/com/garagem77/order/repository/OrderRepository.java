@@ -1,6 +1,8 @@
 package com.garagem77.order.repository;
 
 import com.garagem77.order.entity.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +34,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status = :status AND o.createdAt >= :startDate")
     Long countByStatusAndCreatedAtAfter(@Param("status") String status, @Param("startDate") LocalDateTime startDate);
+
+    Page<Order> findAll(Pageable pageable);
+
+    Page<Order> findByStatus(String status, Pageable pageable);
 }
