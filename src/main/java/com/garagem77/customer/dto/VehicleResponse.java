@@ -33,6 +33,8 @@ public class VehicleResponse {
 
     private UUID customerPublicId;
 
+    private String customerName;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

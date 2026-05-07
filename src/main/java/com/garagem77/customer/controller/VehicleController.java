@@ -2,6 +2,7 @@ package com.garagem77.customer.controller;
 
 import com.garagem77.customer.dto.VehicleCreateRequest;
 import com.garagem77.customer.dto.VehicleResponse;
+import com.garagem77.customer.entity.Customer;
 import com.garagem77.customer.entity.Vehicle;
 import com.garagem77.customer.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +30,29 @@ import java.util.stream.Collectors;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+
+    @GetMapping
+    @Operation(summary = "Listar veículos paginados", description = "Retorna lista paginada de veículos ativos")
+    public ResponseEntity<Page<VehicleResponse>> listVehicles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Vehicle> vehicles = vehicleService.findAllPaged(pageable);
+        Page<VehicleResponse> response = vehicles.map(this::toResponse);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Buscar veículos por placa", description = "Busca paginada por placa contendo o termo")
+    public ResponseEntity<Page<VehicleResponse>> searchVehicles(
+            @RequestParam String plate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Vehicle> vehicles = vehicleService.searchByPlate(plate, pageable);
+        Page<VehicleResponse> response = vehicles.map(this::toResponse);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{publicId}")
     @Operation(summary = "Buscar veículo por ID", description = "Retorna os detalhes de um veículo específico pelo seu ID público")
@@ -117,6 +145,7 @@ public class VehicleController {
     }
 
     private VehicleResponse toResponse(Vehicle vehicle) {
+        Customer customer = vehicleService.getCustomerByVehicleId(vehicle.getCustomerId());
         return VehicleResponse.builder()
             .id(vehicle.getPublicId())
             .plate(vehicle.getPlate())
@@ -126,7 +155,8 @@ public class VehicleController {
             .brand(vehicle.getBrand())
             .observations(vehicle.getObservations())
             .active(vehicle.getActive())
-            .customerPublicId(null) // Você precisaria fazer uma query para pegar o UUID do cliente
+            .customerPublicId(customer != null ? customer.getPublicId() : null)
+            .customerName(customer != null ? customer.getName() : null)
             .createdAt(vehicle.getCreatedAt())
             .updatedAt(vehicle.getUpdatedAt())
             .build();

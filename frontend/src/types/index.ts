@@ -22,12 +22,14 @@ export interface User {
 
 // Clientes
 export interface Customer {
-  id: number;
+  id: string;
   cpf: string;
   name: string;
   email: string;
   phone?: string;
   address?: string;
+  birthDate?: string;
+  active?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -49,15 +51,37 @@ export interface UpdateCustomerDTO {
 
 // Veículos
 export interface Vehicle {
-  id: number;
-  customerId: number;
-  brand: string;
-  model: string;
-  year: number;
+  id: string;
   plate: string;
+  model: string;
   color?: string;
+  year?: number;
+  brand?: string;
+  observations?: string;
+  active?: boolean;
+  customerPublicId?: string;
+  customerName?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateVehicleDTO {
+  plate: string;
+  model: string;
+  color?: string;
+  year?: number;
+  brand?: string;
+  observations?: string;
+  customerCpf: string; // backend recebe como customerCpf mas é o publicId UUID do cliente
+}
+
+export interface UpdateVehicleDTO {
+  plate?: string;
+  model?: string;
+  color?: string;
+  year?: number;
+  brand?: string;
+  observations?: string;
 }
 
 // Serviços

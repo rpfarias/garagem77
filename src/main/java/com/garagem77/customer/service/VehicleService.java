@@ -9,6 +9,8 @@ import com.garagem77.shared.exception.DuplicateResourceException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,21 @@ public class VehicleService {
             .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado: " + customerPublicId));
 
         return vehicleRepository.findByCustomerIdAndActive(customer.getId(), true);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehicle> findAllPaged(Pageable pageable) {
+        return vehicleRepository.findByActive(true, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehicle> searchByPlate(String plate, Pageable pageable) {
+        return vehicleRepository.findByActiveAndPlateContainingIgnoreCase(true, plate, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Customer getCustomerByVehicleId(Long customerId) {
+        return customerRepository.findById(customerId).orElse(null);
     }
 
     public Vehicle create(UUID customerPublicId, String plate, String model, String color, Integer year, String brand, String observations) {
