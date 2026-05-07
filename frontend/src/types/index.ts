@@ -169,6 +169,40 @@ export interface CreateScheduleDTO {
   notes?: string;
 }
 
+// Reports / Analytics
+export interface DashboardSummary {
+  totalCustomers: number;
+  totalVehicles: number;
+  totalServices: number;
+  totalProducts: number;
+  totalSchedules: number;
+  schedulesByStatus: Record<string, number>;
+  lowStockCount: number;
+  outOfStockCount: number;
+  totalInventoryValue: number;
+  averageServicePrice: number;
+  maxServicePrice: number;
+  minServicePrice: number;
+}
+
+export interface RecentScheduleItem {
+  id: string;
+  customerName?: string;
+  vehiclePlate?: string;
+  serviceName?: string;
+  servicePrice?: number;
+  status: ScheduleStatus;
+  scheduledAt: string;
+}
+
+export interface TopServiceItem {
+  id: string;
+  name: string;
+  price: number;
+  bookings: number;
+  totalRevenue: number;
+}
+
 // Paginação
 export interface PaginatedResponse<T> {
   content: T[];
