@@ -86,14 +86,28 @@ export interface UpdateVehicleDTO {
 
 // Serviços
 export interface Service {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   price: number;
-  estimatedTime?: number;
-  isActive: boolean;
+  durationMinutes?: number;
+  active: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateServiceDTO {
+  name: string;
+  description?: string;
+  price: number;
+  durationMinutes?: number;
+}
+
+export interface UpdateServiceDTO {
+  name?: string;
+  description?: string;
+  price?: number;
+  durationMinutes?: number;
 }
 
 // Agendamentos

@@ -10,6 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,17 +69,33 @@ public class ServiceController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos os serviços", description = "Retorna uma lista com todos os serviços cadastrados no sistema")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de serviços retornada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
-    })
-    public ResponseEntity<List<ServiceResponse>> getAllServices() {
-        List<Service> services = serviceService.findAll();
-        List<ServiceResponse> responses = services.stream()
-            .map(this::toResponse)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(responses);
+    @Operation(summary = "Listar serviços paginados", description = "Retorna lista paginada de serviços ativos")
+    public ResponseEntity<Object> listServices(
+            @RequestParam(required = false) Boolean paged,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        if (Boolean.FALSE.equals(paged)) {
+            List<ServiceResponse> all = serviceService.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(all);
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        Page<Service> services = serviceService.findAllPaged(pageable);
+        Page<ServiceResponse> response = services.map(this::toResponse);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search-paged")
+    @Operation(summary = "Buscar serviços paginados por nome", description = "Busca paginada de serviços contendo o termo no nome")
+    public ResponseEntity<Page<ServiceResponse>> searchPaged(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        Page<Service> services = serviceService.searchByName(name, pageable);
+        Page<ServiceResponse> response = services.map(this::toResponse);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -121,6 +141,17 @@ public class ServiceController {
     })
     public ResponseEntity<Void> toggleActive(@PathVariable UUID publicId) {
         serviceService.toggleActive(publicId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{publicId}")
+    @Operation(summary = "Remover serviço", description = "Remove um serviço do sistema (soft delete)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Serviço removido com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
+    })
+    public ResponseEntity<Void> deleteService(@PathVariable UUID publicId) {
+        serviceService.delete(publicId);
         return ResponseEntity.noContent().build();
     }
 

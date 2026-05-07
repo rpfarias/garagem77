@@ -7,6 +7,8 @@ import com.garagem77.shared.exception.DuplicateResourceException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,23 @@ public class ServiceService {
     @Transactional(readOnly = true)
     public List<Service> findByNameContaining(String name) {
         return serviceRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Service> findAllPaged(Pageable pageable) {
+        return serviceRepository.findByActive(true, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Service> searchByName(String name, Pageable pageable) {
+        return serviceRepository.findByActiveAndNameContainingIgnoreCase(true, name, pageable);
+    }
+
+    public void delete(UUID publicId) {
+        Service service = findByPublicId(publicId);
+        service.setActive(false);
+        serviceRepository.save(service);
+        log.info("Serviço removido (soft delete): {}", publicId);
     }
 
     public Service create(String name, String description, BigDecimal price, Integer durationMinutes) {
