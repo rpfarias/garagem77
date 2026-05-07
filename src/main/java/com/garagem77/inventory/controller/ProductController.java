@@ -10,6 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,17 +55,39 @@ public class ProductController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos os produtos", description = "Retorna uma lista com todos os produtos cadastrados no inventário")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de produtos retornada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
-    })
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        List<Product> products = productService.findAll();
-        List<ProductResponse> responses = products.stream()
-            .map(this::toResponse)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(responses);
+    @Operation(summary = "Listar produtos paginados", description = "Retorna lista paginada de produtos ativos. Use ?paged=false para receber List não paginada")
+    public ResponseEntity<Object> listProducts(
+            @RequestParam(required = false) Boolean paged,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        if (Boolean.FALSE.equals(paged)) {
+            List<ProductResponse> all = productService.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(all);
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        Page<Product> products = productService.findAllPaged(pageable);
+        return ResponseEntity.ok(products.map(this::toResponse));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Buscar produtos paginados por nome ou SKU", description = "Use ?name=... ou ?sku=...")
+    public ResponseEntity<Page<ProductResponse>> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String sku,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        Page<Product> products;
+        if (sku != null && !sku.isBlank()) {
+            products = productService.searchBySku(sku, pageable);
+        } else if (name != null && !name.isBlank()) {
+            products = productService.searchByName(name, pageable);
+        } else {
+            products = productService.findAllPaged(pageable);
+        }
+        return ResponseEntity.ok(products.map(this::toResponse));
     }
 
     @GetMapping("/low-stock")
@@ -166,6 +192,17 @@ public class ProductController {
     })
     public ResponseEntity<Void> toggleActive(@PathVariable UUID publicId) {
         productService.toggleActive(publicId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{publicId}")
+    @Operation(summary = "Remover produto", description = "Remove um produto (soft delete)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Produto removido com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID publicId) {
+        productService.delete(publicId);
         return ResponseEntity.noContent().build();
     }
 

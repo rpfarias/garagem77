@@ -7,6 +7,8 @@ import com.garagem77.shared.exception.DuplicateResourceException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,28 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<Product> findOutOfStock() {
         return productRepository.findOutOfStock();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> findAllPaged(Pageable pageable) {
+        return productRepository.findByActive(true, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> searchByName(String name, Pageable pageable) {
+        return productRepository.findByActiveAndNameContainingIgnoreCase(true, name, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> searchBySku(String sku, Pageable pageable) {
+        return productRepository.findByActiveAndSkuContainingIgnoreCase(true, sku, pageable);
+    }
+
+    public void delete(UUID publicId) {
+        Product product = findByPublicId(publicId);
+        product.setActive(false);
+        productRepository.save(product);
+        log.info("Produto removido (soft delete): {}", publicId);
     }
 
     public Product create(String name, String description, String sku, BigDecimal unitPrice, Integer quantityStock, Integer minimumQuantity) {

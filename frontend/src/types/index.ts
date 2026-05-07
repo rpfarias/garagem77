@@ -110,6 +110,37 @@ export interface UpdateServiceDTO {
   durationMinutes?: number;
 }
 
+// Produtos
+export interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  sku?: string;
+  unitPrice: number;
+  quantityStock: number;
+  minimumQuantity: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProductDTO {
+  name: string;
+  description?: string;
+  sku?: string;
+  unitPrice: number;
+  quantityStock: number;
+  minimumQuantity: number;
+}
+
+export interface UpdateProductDTO {
+  name?: string;
+  description?: string;
+  sku?: string;
+  unitPrice?: number;
+  minimumQuantity?: number;
+}
+
 // Agendamentos
 export type ScheduleStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
