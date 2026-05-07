@@ -12,6 +12,8 @@ import com.garagem77.shared.exception.BusinessRuleException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,37 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public List<Schedule> findByStatus(String status) {
         return scheduleRepository.findByStatus(status);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Schedule> findAllPaged(Pageable pageable) {
+        return scheduleRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Schedule> findByStatusPaged(String status, Pageable pageable) {
+        return scheduleRepository.findByStatus(status, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Vehicle getVehicleById(Long id) {
+        return vehicleRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Service getServiceById(Long id) {
+        return serviceRepository.findById(id).orElse(null);
+    }
+
+    public void delete(UUID publicId) {
+        Schedule schedule = findByPublicId(publicId);
+        scheduleRepository.delete(schedule);
+        log.info("Agendamento removido: {}", publicId);
     }
 
     public Schedule create(UUID customerPublicId, UUID vehiclePublicId, UUID servicePublicId, LocalDateTime scheduledAt, String notes) {

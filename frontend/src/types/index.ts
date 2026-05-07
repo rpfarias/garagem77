@@ -111,15 +111,31 @@ export interface UpdateServiceDTO {
 }
 
 // Agendamentos
+export type ScheduleStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
 export interface Schedule {
-  id: number;
-  customerId: number;
-  vehicleId: number;
-  scheduledDate: string;
-  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  id: string;
+  customerPublicId?: string;
+  customerName?: string;
+  vehiclePublicId?: string;
+  vehiclePlate?: string;
+  vehicleModel?: string;
+  serviceId?: string;
+  serviceName?: string;
+  servicePrice?: number;
+  scheduledAt: string;
+  status: ScheduleStatus;
   notes?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateScheduleDTO {
+  customerId: string;
+  vehicleId: string;
+  serviceId: string;
+  scheduledAt: string;
+  notes?: string;
 }
 
 // Paginação

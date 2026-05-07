@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,15 +18,16 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ScheduleCreateRequest {
 
-    @NotBlank(message = "CPF do cliente não pode estar vazio")
-    private String customerCpf;
+    @NotNull(message = "ID do cliente não pode estar vazio")
+    private UUID customerId;
 
-    @NotBlank(message = "Placa do veículo não pode estar vazia")
-    private String vehiclePlate;
+    @NotNull(message = "ID do veículo não pode estar vazio")
+    private UUID vehicleId;
 
-    @NotBlank(message = "ID do serviço não pode estar vazio")
+    @NotNull(message = "ID do serviço não pode estar vazio")
     private UUID serviceId;
 
+    @NotNull(message = "Data agendada não pode estar vazia")
     @Future(message = "A data agendada deve ser no futuro")
     private LocalDateTime scheduledAt;
 
