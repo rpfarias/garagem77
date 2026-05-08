@@ -31,6 +31,12 @@ public class CompanyService {
             .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada: " + slug));
     }
 
+    @Transactional(readOnly = true)
+    public Company findById(Long id) {
+        return companyRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada: id=" + id));
+    }
+
     public Company create(String slug, String name, String email, String phone) {
         if (companyRepository.findBySlug(slug).isPresent()) {
             throw new DuplicateResourceException("Slug já existe: " + slug);

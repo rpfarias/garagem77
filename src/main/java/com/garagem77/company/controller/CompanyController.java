@@ -1,5 +1,6 @@
 package com.garagem77.company.controller;
 
+import com.garagem77.auth.security.UserPrincipal;
 import com.garagem77.company.entity.Company;
 import com.garagem77.company.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,6 +22,13 @@ import java.util.UUID;
 public class CompanyController {
 
     private final CompanyService companyService;
+
+    @GetMapping("/me")
+    @Operation(summary = "Obter empresa do usuário autenticado", description = "Retorna a empresa associada ao usuário logado a partir do token JWT")
+    public ResponseEntity<Company> getCurrentCompany(@AuthenticationPrincipal UserPrincipal principal) {
+        Company company = companyService.findById(principal.getCompanyId());
+        return ResponseEntity.ok(company);
+    }
 
     @GetMapping("/{publicId}")
     @Operation(summary = "Obter empresa por ID", description = "Retorna os detalhes de uma empresa específica")

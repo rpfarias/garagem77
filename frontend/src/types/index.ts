@@ -11,11 +11,13 @@ export interface AuthenticationResponse {
 }
 
 export interface User {
-  id: string;
+  id: number;
+  publicId: string;
   email: string;
   name: string;
   role: string;
-  isActive: boolean;
+  active?: boolean;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -214,6 +216,21 @@ export interface CreateOrderDTO {
   vehicleId: string;
   items: CreateOrderItemDTO[];
   notes?: string;
+}
+
+// Empresa
+export interface Company {
+  id: number;
+  publicId: string;
+  slug: string;
+  name: string;
+  email: string;
+  phone?: string;
+  planType: string;
+  active: boolean;
+  schemaName?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Pagamentos

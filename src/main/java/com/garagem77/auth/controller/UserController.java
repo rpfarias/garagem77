@@ -1,6 +1,7 @@
 package com.garagem77.auth.controller;
 
 import com.garagem77.auth.entity.User;
+import com.garagem77.auth.security.UserPrincipal;
 import com.garagem77.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,6 +23,13 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/me")
+    @Operation(summary = "Obter usuário autenticado", description = "Retorna os dados do usuário atualmente logado a partir do token JWT")
+    public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal UserPrincipal principal) {
+        User user = userService.findByPublicId(principal.getPublicId());
+        return ResponseEntity.ok(user);
+    }
 
     @GetMapping("/{publicId}")
     @Operation(summary = "Buscar usuário por ID", description = "Retorna os detalhes de um usuário específico pelo seu ID público")
