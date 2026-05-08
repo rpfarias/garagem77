@@ -21,11 +21,17 @@ body {
   background-color: #fafbfc;
   color: #0f172a;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+html.dark body {
+  background-color: #020617;
+  color: #f1f5f9;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  @apply font-semibold tracking-tight text-slate-900;
+  @apply font-semibold tracking-tight text-slate-900 dark:text-slate-100;
 }
 
 h1 { @apply text-2xl; }
@@ -43,19 +49,22 @@ table {
 }
 
 thead {
-  @apply bg-slate-50;
+  @apply bg-slate-50 dark:bg-slate-800/40;
 }
 
 th {
-  @apply px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200;
+  @apply px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider border-b;
+  @apply text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800;
 }
 
 td {
-  @apply px-6 py-4 text-sm text-slate-700 border-b border-slate-100;
+  @apply px-6 py-4 text-sm border-b;
+  @apply text-slate-700 dark:text-slate-300 border-slate-100 dark:border-slate-800/60;
 }
 
 tbody tr {
-  @apply transition-colors duration-150 hover:bg-slate-50/60;
+  @apply transition-colors duration-150;
+  @apply hover:bg-slate-50/60 dark:hover:bg-slate-800/30;
 }
 
 tbody tr:last-child td {
@@ -69,7 +78,7 @@ input, select, textarea {
 
 input[type='checkbox'],
 input[type='radio'] {
-  @apply w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500 cursor-pointer;
+  @apply w-4 h-4 text-primary-600 border-slate-300 dark:border-slate-700 rounded focus:ring-primary-500 cursor-pointer;
 }
 
 /* Scrollbar */
@@ -83,21 +92,21 @@ input[type='radio'] {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full transition-colors;
+  @apply bg-slate-200 dark:bg-slate-700 rounded-full transition-colors;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-300;
+  @apply bg-slate-300 dark:bg-slate-600;
 }
 
 /* Selection */
 ::selection {
-  @apply bg-primary-100 text-primary-900;
+  @apply bg-primary-100 text-primary-900 dark:bg-primary-900/40 dark:text-primary-100;
 }
 
 /* Focus visible improvements */
 *:focus-visible {
-  @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-white;
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900;
 }
 
 /* Glass morphism utility */
@@ -105,6 +114,10 @@ input[type='radio'] {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+html.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
 }
 
 /* Card hover effect */
@@ -119,6 +132,16 @@ input[type='radio'] {
     rgba(241, 245, 249, 0) 0%,
     rgba(226, 232, 240, 0.6) 50%,
     rgba(241, 245, 249, 0) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+html.dark .shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0) 0%,
+    rgba(51, 65, 85, 0.6) 50%,
+    rgba(30, 41, 59, 0) 100%
   );
   background-size: 1000px 100%;
 }

@@ -42,6 +42,8 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
 
     if (!formData.name.trim()) {
       newErrors.name = 'Nome é obrigatório';
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = 'Mínimo 3 caracteres';
     }
 
     if (!formData.email.trim()) {
@@ -50,8 +52,20 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
       newErrors.email = 'Email inválido';
     }
 
-    if (!isEditing && !formData.cpf.trim()) {
-      newErrors.cpf = 'CPF é obrigatório';
+    if (!isEditing) {
+      const cpfDigits = formData.cpf.replace(/\D/g, '');
+      if (!cpfDigits) {
+        newErrors.cpf = 'CPF é obrigatório';
+      } else if (cpfDigits.length !== 11) {
+        newErrors.cpf = 'CPF deve ter 11 dígitos';
+      }
+    }
+
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (!phoneDigits) {
+      newErrors.phone = 'Telefone é obrigatório';
+    } else if (phoneDigits.length < 10 || phoneDigits.length > 20) {
+      newErrors.phone = 'Telefone deve ter 10-20 dígitos';
     }
 
     setErrors(newErrors);
@@ -75,12 +89,15 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
     if (!validateForm()) return;
 
     setIsLoading(true);
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    const cpfDigits = formData.cpf.replace(/\D/g, '');
+
     try {
       if (isEditing) {
         const updateDto: UpdateCustomerDTO = {
           name: formData.name,
           email: formData.email,
-          phone: formData.phone,
+          phone: phoneDigits,
           address: formData.address,
         };
         await apiClient.put<Customer>(`/customers/${customer!.id}`, updateDto);
@@ -89,16 +106,24 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
         const createDto: CreateCustomerDTO = {
           name: formData.name,
           email: formData.email,
-          cpf: formData.cpf,
-          phone: formData.phone,
-          address: formData.address,
+          cpf: cpfDigits,
+          phone: phoneDigits,
+          address: formData.address || undefined,
         };
         await apiClient.post<Customer>('/customers', createDto);
         toast.success('Cliente criado com sucesso');
       }
       onSuccess();
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao salvar cliente';
+      // Try to extract validation errors from backend
+      const data = error.response?.data;
+      let message = data?.message || 'Erro ao salvar cliente';
+      if (data?.validationErrors) {
+        const fieldErrors = Object.entries(data.validationErrors)
+          .map(([field, msg]) => `${field}: ${msg}`)
+          .join(' • ');
+        message = fieldErrors || message;
+      }
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -109,7 +134,7 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-4">
         <Input
-          label="Nome completo"
+          label="Nome completo *"
           type="text"
           name="name"
           placeholder="João da Silva"
@@ -120,7 +145,7 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
         />
 
         <Input
-          label="Email"
+          label="Email *"
           type="email"
           name="email"
           placeholder="cliente@email.com"
@@ -132,7 +157,7 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
 
         {!isEditing && (
           <Input
-            label="CPF"
+            label="CPF *"
             type="text"
             name="cpf"
             placeholder="000.000.000-00"
@@ -140,26 +165,29 @@ export function CustomerForm({ customer, onSuccess, onCancel }: CustomerFormProp
             onChange={handleChange}
             error={errors.cpf}
             disabled={isLoading}
-            helpText="Apenas números ou com pontuação"
+            helpText="11 dígitos (com ou sem pontuação)"
+            maxLength={14}
           />
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
-            label="Telefone"
+            label="Telefone *"
             type="text"
             name="phone"
             placeholder="(11) 99999-9999"
             value={formData.phone}
             onChange={handleChange}
+            error={errors.phone}
             disabled={isLoading}
+            helpText="DDD + número"
           />
 
           <Input
             label="Endereço"
             type="text"
             name="address"
-            placeholder="Rua, número"
+            placeholder="Rua, número (opcional)"
             value={formData.address}
             onChange={handleChange}
             disabled={isLoading}

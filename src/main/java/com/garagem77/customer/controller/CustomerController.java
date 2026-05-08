@@ -10,6 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,31 +56,39 @@ public class CustomerController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Pesquisar clientes por nome", description = "Retorna uma lista de clientes cujo nome corresponde ao termo de busca")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Parâmetro de busca inválido")
-    })
-    public ResponseEntity<List<CustomerResponse>> searchByName(@RequestParam String name) {
-        List<Customer> customers = customerService.findByName(name);
-        List<CustomerResponse> responses = customers.stream()
+    @Operation(summary = "Pesquisar clientes por nome",
+        description = "Se o parâmetro 'page' for fornecido, retorna paginado; caso contrário retorna lista")
+    public ResponseEntity<Object> searchByName(
+            @RequestParam String name,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(defaultValue = "10") int size) {
+        if (page != null) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+            Page<Customer> customers = customerService.searchByName(name, pageable);
+            return ResponseEntity.ok(customers.map(this::toResponse));
+        }
+        List<CustomerResponse> responses = customerService.findByName(name).stream()
             .map(this::toResponse)
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos os clientes", description = "Retorna uma lista com todos os clientes cadastrados no sistema")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro ao processar a requisição")
-    })
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
-        List<Customer> customers = customerService.findAll();
-        List<CustomerResponse> responses = customers.stream()
-            .map(this::toResponse)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(responses);
+    @Operation(summary = "Listar clientes",
+        description = "Por padrão retorna paginado. Use ?paged=false para receber lista não paginada (compat)")
+    public ResponseEntity<Object> getAllCustomers(
+            @RequestParam(required = false) Boolean paged,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        if (Boolean.FALSE.equals(paged)) {
+            List<CustomerResponse> all = customerService.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(all);
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        Page<Customer> customers = customerService.findAllPaged(pageable);
+        return ResponseEntity.ok(customers.map(this::toResponse));
     }
 
     @PostMapping

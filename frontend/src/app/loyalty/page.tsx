@@ -359,7 +359,7 @@ export default function LoyaltyPage() {
   useEffect(() => {
     if (tab === 'BALANCES') {
       apiClient
-        .get<Customer[]>('/customers')
+        .get<Customer[]>('/customers?paged=false')
         .then((data) => setCustomers(data || []))
         .catch(() => {});
     }

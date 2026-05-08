@@ -52,12 +52,12 @@ export function Modal({
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
         className={clsx(
-          'relative w-full bg-white rounded-2xl shadow-modal animate-scaleIn',
+          'relative w-full bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-modal animate-scaleIn',
           sizeClasses[size]
         )}
         onClick={(e) => e.stopPropagation()}
@@ -65,14 +65,14 @@ export function Modal({
         {/* Header */}
         <div className="flex items-start justify-between gap-4 p-6 pb-4">
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-semibold text-slate-900 leading-tight">{title}</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 leading-tight">{title}</h2>
             {description && (
-              <p className="mt-1 text-sm text-slate-500">{description}</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 -m-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
+            className="p-1.5 -m-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
             aria-label="Fechar"
           >
             <CloseIcon className="w-5 h-5" />

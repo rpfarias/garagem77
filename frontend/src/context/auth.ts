@@ -7,6 +7,7 @@ interface AuthState {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isInitialized: boolean;
 
   // Actions
   login: (email: string, password: string) => Promise<void>;
@@ -15,11 +16,15 @@ interface AuthState {
   checkAuth: () => void;
 }
 
+// O estado inicial deve ser idêntico no server e no primeiro render do client
+// para evitar hydration mismatch. checkAuth() popula a partir do localStorage no client
+// dentro de um useEffect (sempre depois do primeiro render).
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
   isLoading: false,
   isAuthenticated: false,
+  isInitialized: false,
 
   login: async (email: string, password: string) => {
     set({ isLoading: true });
@@ -29,6 +34,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         token: response.token,
         isAuthenticated: true,
         isLoading: false,
+        isInitialized: true,
       });
     } catch (error) {
       set({ isLoading: false });
@@ -42,6 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       user: null,
       token: null,
       isAuthenticated: false,
+      isInitialized: true,
     });
   },
 
@@ -52,11 +59,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   checkAuth: () => {
     if (typeof window === 'undefined') return;
     const token = localStorage.getItem('auth_token');
-    if (token) {
-      set({
-        token,
-        isAuthenticated: true,
-      });
-    }
+    set({
+      token: token || null,
+      isAuthenticated: !!token,
+      isInitialized: true,
+    });
   },
 }));

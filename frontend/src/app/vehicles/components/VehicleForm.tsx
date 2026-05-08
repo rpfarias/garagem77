@@ -48,7 +48,7 @@ export function VehicleForm({ vehicle, onSuccess, onCancel }: VehicleFormProps) 
     if (isEditing) return;
     setLoadingCustomers(true);
     apiClient
-      .get<Customer[]>('/customers')
+      .get<Customer[]>('/customers?paged=false')
       .then((data) => setCustomers(data || []))
       .catch(() => toast.error('Erro ao carregar clientes'))
       .finally(() => setLoadingCustomers(false));

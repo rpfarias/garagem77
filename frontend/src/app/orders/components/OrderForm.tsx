@@ -52,7 +52,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
     if (isEditing) return;
     setLoadingLists(true);
     Promise.all([
-      apiClient.get<Customer[]>('/customers'),
+      apiClient.get<Customer[]>('/customers?paged=false'),
       apiClient.get<{ content: Service[] } | Service[]>('/services?paged=false'),
       apiClient.get<{ content: Product[] } | Product[]>('/products?paged=false'),
     ])

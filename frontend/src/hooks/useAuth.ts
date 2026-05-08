@@ -4,12 +4,22 @@ import { useAuthStore } from '@/context/auth';
 
 export function useAuth() {
   const router = useRouter();
-  const { user, token, isLoading, isAuthenticated, login, logout, setUser, checkAuth } =
-    useAuthStore();
+  const {
+    user,
+    token,
+    isLoading,
+    isAuthenticated,
+    isInitialized,
+    login,
+    logout,
+    setUser,
+    checkAuth,
+  } = useAuthStore();
 
+  // Sincroniza com localStorage uma vez se ainda não foi feito
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    if (!isInitialized) checkAuth();
+  }, [isInitialized, checkAuth]);
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -30,6 +40,7 @@ export function useAuth() {
     token,
     isLoading,
     isAuthenticated,
+    isInitialized,
     login: handleLogin,
     logout: handleLogout,
     setUser,

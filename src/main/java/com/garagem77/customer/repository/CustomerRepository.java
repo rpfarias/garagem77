@@ -1,6 +1,8 @@
 package com.garagem77.customer.repository;
 
 import com.garagem77.customer.entity.Customer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +22,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     List<Customer> findByActive(Boolean active);
 
     List<Customer> findByPhoneContaining(String phone);
+
+    Page<Customer> findAll(Pageable pageable);
+
+    Page<Customer> findByActive(Boolean active, Pageable pageable);
+
+    Page<Customer> findByActiveAndNameContainingIgnoreCase(Boolean active, String name, Pageable pageable);
 }

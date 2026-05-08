@@ -35,17 +35,28 @@ export function Layout({
 }: LayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, checkAuth } = useAuthStore();
+  const { isAuthenticated, isInitialized, checkAuth } = useAuthStore();
 
+  // Garante que o store foi sincronizado com localStorage no client
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    if (!isInitialized) checkAuth();
+  }, [isInitialized, checkAuth]);
 
+  // Só redireciona se já sabemos que o usuário NÃO está autenticado
   useEffect(() => {
-    if (requireAuth && !isAuthenticated) {
+    if (isInitialized && requireAuth && !isAuthenticated) {
       router.push('/login');
     }
-  }, [requireAuth, isAuthenticated, router]);
+  }, [isInitialized, requireAuth, isAuthenticated, router]);
+
+  // Enquanto não sabemos o estado de auth (SSR/primeiro mount), mostra loading discreto
+  if (requireAuth && !isInitialized) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950">
+        <div className="w-8 h-8 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (requireAuth && !isAuthenticated) {
     return null;
@@ -56,7 +67,7 @@ export function Layout({
   const finalDescription = pageDescription || pageInfo?.description || '';
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
       {isAuthenticated && <Navbar />}
       <main className={isAuthenticated ? 'flex-1 ml-64' : 'flex-1'}>
         {isAuthenticated && <TopBar title={finalTitle} description={finalDescription} />}

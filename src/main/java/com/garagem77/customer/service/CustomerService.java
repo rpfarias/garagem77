@@ -8,6 +8,8 @@ import com.garagem77.shared.exception.DuplicateResourceException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,16 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public List<Customer> findAll() {
         return customerRepository.findByActive(true);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Customer> findAllPaged(Pageable pageable) {
+        return customerRepository.findByActive(true, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Customer> searchByName(String name, Pageable pageable) {
+        return customerRepository.findByActiveAndNameContainingIgnoreCase(true, name, pageable);
     }
 
     public Customer create(String cpf, String name, String email, String phone, LocalDate birthDate, String address) {
