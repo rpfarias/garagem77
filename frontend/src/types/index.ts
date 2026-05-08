@@ -216,6 +216,41 @@ export interface CreateOrderDTO {
   notes?: string;
 }
 
+// Loyalty
+export interface LoyaltyProgram {
+  id: string;
+  name: string;
+  pointsPerReal: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateLoyaltyProgramDTO {
+  name: string;
+  pointsPerReal: number;
+}
+
+export interface LoyaltyPoint {
+  id: string;
+  customerPublicId?: string;
+  customerName?: string;
+  customerCpf?: string;
+  programPublicId?: string;
+  programName?: string;
+  pointsBalance: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LoyaltyTransaction {
+  id: string;
+  transactionType: 'EARN' | 'REDEEM';
+  pointsValue: number;
+  description?: string;
+  createdAt: string;
+}
+
 // Reports / Analytics
 export interface DashboardSummary {
   totalCustomers: number;

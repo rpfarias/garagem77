@@ -13,6 +13,7 @@ import {
   CalendarIcon,
   PackageIcon,
   ChartIcon,
+  SparkleIcon,
   SettingsIcon,
   LogoutIcon,
 } from './Icons';
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
   { href: '/schedules', label: 'Agendamentos', icon: <CalendarIcon /> },
   { href: '/orders', label: 'Pedidos', icon: <PackageIcon /> },
   { href: '/products', label: 'Produtos', icon: <PackageIcon /> },
+  { href: '/loyalty', label: 'Fidelidade', icon: <SparkleIcon /> },
   { href: '/reports', label: 'Relatórios', icon: <ChartIcon /> },
 ];
 

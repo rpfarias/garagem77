@@ -1,6 +1,8 @@
 package com.garagem77.loyalty.repository;
 
 import com.garagem77.loyalty.entity.LoyaltyPoint;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +26,6 @@ public interface LoyaltyPointRepository extends JpaRepository<LoyaltyPoint, Long
 
     @Query("SELECT SUM(lp.pointsBalance) FROM LoyaltyPoint lp WHERE lp.customerId = :customerId")
     Long sumPointsByCustomerId(@Param("customerId") Long customerId);
+
+    Page<LoyaltyPoint> findAll(Pageable pageable);
 }

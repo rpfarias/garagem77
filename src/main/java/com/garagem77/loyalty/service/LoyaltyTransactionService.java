@@ -1,10 +1,10 @@
 package com.garagem77.loyalty.service;
 
+import com.garagem77.loyalty.entity.LoyaltyPoint;
 import com.garagem77.loyalty.entity.LoyaltyTransaction;
 import com.garagem77.loyalty.repository.LoyaltyTransactionRepository;
 import com.garagem77.order.entity.Order;
 import com.garagem77.order.repository.OrderRepository;
-import com.garagem77.shared.exception.BusinessRuleException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,70 +31,43 @@ public class LoyaltyTransactionService {
             .orElseThrow(() -> new ResourceNotFoundException("Transação de pontos não encontrada: " + publicId));
     }
 
-    @Transactional(readOnly = true)
-    public List<LoyaltyTransaction> findByLoyaltyPointId(UUID loyaltyPointPublicId) {
-        // Você precisaria ter o ID interno aqui - isto é um exemplo simplificado
-        return List.of(); // Implementar conforme necessário
-    }
-
+    /**
+     * Registra ganho de pontos a partir de um pedido.
+     * Calcula os pontos baseado no valor (1 ponto por real) e delega para
+     * LoyaltyPointService.addPoints (que já registra a transação).
+     */
     public void recordEarning(UUID customerPublicId, UUID orderPublicId, BigDecimal orderAmount) {
         Order order = orderRepository.findByPublicId(orderPublicId)
             .orElseThrow(() -> new ResourceNotFoundException("Ordem não encontrada: " + orderPublicId));
 
-        var loyaltyPoint = loyaltyPointService.createOrGetForCustomer(customerPublicId);
+        Integer points = orderAmount.intValue();
+        String description = "Pontos ganhos pela ordem: " + orderPublicId;
+        loyaltyPointService.addPoints(customerPublicId, points, description);
 
-        // Calcular pontos baseado no valor da ordem
-        Integer points = orderAmount.intValue(); // 1 ponto por real
-
-        LoyaltyTransaction transaction = LoyaltyTransaction.builder()
-            .loyaltyPointId(loyaltyPoint.getId())
-            .orderId(order.getId())
-            .transactionType("EARN")
-            .pointsValue(points)
-            .description("Pontos ganhos pela ordem: " + orderPublicId)
-            .build();
-
-        LoyaltyTransaction saved = loyaltyTransactionRepository.save(transaction);
-
-        // Adicionar pontos ao saldo
-        loyaltyPointService.addPoints(customerPublicId, points);
-
-        log.info("Transação de ganho registrada: {} pontos para cliente {}", points, customerPublicId);
+        log.info("Ganho de pontos registrado: {} pontos pela ordem {}", points, order.getPublicId());
     }
 
+    /**
+     * Registra resgate manual de pontos.
+     * Delega para LoyaltyPointService.redeemPoints (que valida saldo e registra a transação).
+     */
     public void recordRedemption(UUID customerPublicId, Integer points, String description) {
-        if (points <= 0) {
-            throw new BusinessRuleException("Quantidade de pontos deve ser maior que 0");
-        }
-
-        var loyaltyPoint = loyaltyPointService.findByCustomerId(customerPublicId);
-
-        LoyaltyTransaction transaction = LoyaltyTransaction.builder()
-            .loyaltyPointId(loyaltyPoint.getId())
-            .orderId(null)
-            .transactionType("REDEEM")
-            .pointsValue(points)
-            .description(description != null ? description : "Resgate de pontos")
-            .build();
-
-        LoyaltyTransaction saved = loyaltyTransactionRepository.save(transaction);
-
-        // Remover pontos do saldo
-        loyaltyPointService.redeemPoints(customerPublicId, points);
-
-        log.info("Transação de resgate registrada: {} pontos resgatados por cliente {}", points, customerPublicId);
+        loyaltyPointService.redeemPoints(customerPublicId, points, description);
+        log.info("Resgate de pontos registrado: {} pontos do cliente {}", points, customerPublicId);
     }
 
     @Transactional(readOnly = true)
     public Integer getTotalEarnedPoints(UUID loyaltyPointPublicId) {
-        // Você precisaria ter o ID interno aqui
-        return 0; // Implementar conforme necessário
+        LoyaltyPoint lp = loyaltyPointService.findByPublicId(loyaltyPointPublicId);
+        Integer total = loyaltyTransactionRepository.sumEarnedPointsByLoyaltyPointId(lp.getId());
+        return total != null ? total : 0;
     }
 
     @Transactional(readOnly = true)
     public Integer getTotalRedeemedPoints(UUID loyaltyPointPublicId) {
-        // Você precisaria ter o ID interno aqui
-        return 0; // Implementar conforme necessário
+        LoyaltyPoint lp = loyaltyPointService.findByPublicId(loyaltyPointPublicId);
+        Integer total = loyaltyTransactionRepository.sumRedeemedPointsByLoyaltyPointId(lp.getId());
+        return total != null ? total : 0;
     }
 
     @Transactional(readOnly = true)

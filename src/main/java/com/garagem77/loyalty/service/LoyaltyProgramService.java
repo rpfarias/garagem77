@@ -7,6 +7,8 @@ import com.garagem77.shared.exception.DuplicateResourceException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,17 @@ public class LoyaltyProgramService {
         return loyaltyProgramRepository.findByActive(true).stream()
             .findFirst()
             .orElseThrow(() -> new ResourceNotFoundException("Nenhum programa de fidelidade ativo encontrado"));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<LoyaltyProgram> findAllPaged(Pageable pageable) {
+        return loyaltyProgramRepository.findAll(pageable);
+    }
+
+    public void delete(UUID publicId) {
+        LoyaltyProgram program = findByPublicId(publicId);
+        loyaltyProgramRepository.delete(program);
+        log.info("Programa de fidelidade removido: {}", publicId);
     }
 
     public LoyaltyProgram create(String name, BigDecimal pointsPerReal) {
