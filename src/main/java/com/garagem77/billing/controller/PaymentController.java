@@ -1,12 +1,19 @@
 package com.garagem77.billing.controller;
 
+import com.garagem77.billing.dto.PaymentCreateRequest;
+import com.garagem77.billing.dto.PaymentResponse;
 import com.garagem77.billing.entity.Payment;
 import com.garagem77.billing.service.PaymentService;
+import com.garagem77.customer.entity.Customer;
+import com.garagem77.order.entity.Order;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/payments")
@@ -23,77 +31,62 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    @GetMapping
+    @Operation(summary = "Listar pagamentos paginados", description = "Lista paginada de pagamentos com filtro opcional por status")
+    public ResponseEntity<Page<PaymentResponse>> listPayments(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Payment> payments = (status != null && !status.isBlank())
+            ? paymentService.findByStatusPaged(status, pageable)
+            : paymentService.findAllPaged(pageable);
+        return ResponseEntity.ok(payments.map(this::toResponse));
+    }
+
     @GetMapping("/{publicId}")
-    @Operation(summary = "Buscar pagamento por ID", description = "Retorna os detalhes de um pagamento específico pelo seu ID público")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Pagamento encontrado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
-        @ApiResponse(responseCode = "400", description = "ID inválido")
-    })
-    public ResponseEntity<Payment> getPaymentById(@PathVariable UUID publicId) {
+    @Operation(summary = "Buscar pagamento por ID")
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID publicId) {
         Payment payment = paymentService.findByPublicId(publicId);
-        return ResponseEntity.ok(payment);
+        return ResponseEntity.ok(toResponse(payment));
     }
 
     @GetMapping("/order/{orderPublicId}")
-    @Operation(summary = "Listar pagamentos de um pedido", description = "Retorna uma lista de todos os pagamentos associados a um pedido específico")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de pagamentos retornada com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
-        @ApiResponse(responseCode = "400", description = "ID do pedido inválido")
-    })
-    public ResponseEntity<List<Payment>> getPaymentsByOrder(@PathVariable UUID orderPublicId) {
+    @Operation(summary = "Listar pagamentos de uma ordem")
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByOrder(@PathVariable UUID orderPublicId) {
         List<Payment> payments = paymentService.findByOrderId(orderPublicId);
-        return ResponseEntity.ok(payments);
+        return ResponseEntity.ok(payments.stream().map(this::toResponse).collect(Collectors.toList()));
     }
 
     @GetMapping("/status/{status}")
-    @Operation(summary = "Listar pagamentos por status", description = "Retorna uma lista de pagamentos filtrados pelo status especificado")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de pagamentos retornada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Status inválido")
-    })
-    public ResponseEntity<List<Payment>> getPaymentsByStatus(@PathVariable String status) {
+    @Operation(summary = "Listar pagamentos por status (não paginado)")
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByStatus(@PathVariable String status) {
         List<Payment> payments = paymentService.findByStatus(status);
-        return ResponseEntity.ok(payments);
+        return ResponseEntity.ok(payments.stream().map(this::toResponse).collect(Collectors.toList()));
     }
 
     @PostMapping
-    @Operation(summary = "Criar novo pagamento", description = "Cria um novo pagamento para um pedido existente")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Pagamento criado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-        @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
-    })
-    public ResponseEntity<Payment> createPayment(
-            @RequestParam UUID orderPublicId,
-            @RequestParam String paymentMethod,
-            @RequestParam BigDecimal amount) {
-        Payment payment = paymentService.create(orderPublicId, paymentMethod, amount);
-        return ResponseEntity.status(HttpStatus.CREATED).body(payment);
+    @Operation(summary = "Criar novo pagamento")
+    public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request) {
+        Payment payment = paymentService.create(
+            request.getOrderId(),
+            request.getPaymentMethod(),
+            request.getAmount()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(payment));
     }
 
     @PatchMapping("/{publicId}/complete")
-    @Operation(summary = "Completar pagamento", description = "Marca um pagamento como completado com transação confirmada")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Pagamento completado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
-        @ApiResponse(responseCode = "400", description = "Pagamento não pode ser completado")
-    })
-    public ResponseEntity<Payment> completePayment(
+    @Operation(summary = "Marcar pagamento como concluído")
+    public ResponseEntity<PaymentResponse> completePayment(
             @PathVariable UUID publicId,
             @RequestParam(required = false) String transactionId) {
         Payment payment = paymentService.completePayment(publicId, transactionId);
-        return ResponseEntity.ok(payment);
+        return ResponseEntity.ok(toResponse(payment));
     }
 
     @PatchMapping("/{publicId}/fail")
-    @Operation(summary = "Marcar pagamento como falhado", description = "Marca um pagamento como falhado com motivo opcional")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Pagamento marcado como falhado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
-        @ApiResponse(responseCode = "400", description = "Pagamento não pode ser marcado como falhado")
-    })
+    @Operation(summary = "Marcar pagamento como falhado")
     public ResponseEntity<Void> failPayment(
             @PathVariable UUID publicId,
             @RequestParam(required = false) String reason) {
@@ -102,26 +95,42 @@ public class PaymentController {
     }
 
     @PatchMapping("/{publicId}/cancel")
-    @Operation(summary = "Cancelar pagamento", description = "Cancela um pagamento existente")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Pagamento cancelado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
-        @ApiResponse(responseCode = "400", description = "Pagamento não pode ser cancelado")
-    })
+    @Operation(summary = "Cancelar pagamento")
     public ResponseEntity<Void> cancelPayment(@PathVariable UUID publicId) {
         paymentService.cancelPayment(publicId);
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{publicId}")
+    @Operation(summary = "Remover pagamento permanentemente")
+    public ResponseEntity<Void> deletePayment(@PathVariable UUID publicId) {
+        paymentService.delete(publicId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/order/{orderPublicId}/total-paid")
-    @Operation(summary = "Obter total pago em um pedido", description = "Retorna o valor total já pago para um pedido específico")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Valor total pago calculado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
-        @ApiResponse(responseCode = "400", description = "ID do pedido inválido")
-    })
+    @Operation(summary = "Obter valor total pago de uma ordem")
     public ResponseEntity<BigDecimal> getTotalPaidAmount(@PathVariable UUID orderPublicId) {
-        BigDecimal totalPaid = paymentService.getTotalPaidAmount(orderPublicId);
-        return ResponseEntity.ok(totalPaid);
+        BigDecimal total = paymentService.getTotalPaidAmount(orderPublicId);
+        return ResponseEntity.ok(total);
+    }
+
+    private PaymentResponse toResponse(Payment payment) {
+        Order order = paymentService.getOrderById(payment.getOrderId());
+        Customer customer = order != null ? paymentService.getCustomerById(order.getCustomerId()) : null;
+
+        return PaymentResponse.builder()
+            .id(payment.getPublicId())
+            .orderPublicId(order != null ? order.getPublicId() : null)
+            .customerName(customer != null ? customer.getName() : null)
+            .orderFinalAmount(order != null ? order.getFinalAmount() : null)
+            .paymentMethod(payment.getPaymentMethod())
+            .amount(payment.getAmount())
+            .status(payment.getStatus())
+            .paymentDate(payment.getPaymentDate())
+            .transactionId(payment.getTransactionId())
+            .createdAt(payment.getCreatedAt())
+            .updatedAt(payment.getUpdatedAt())
+            .build();
     }
 }

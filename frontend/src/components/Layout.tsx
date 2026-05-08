@@ -20,6 +20,7 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   '/services': { title: 'Serviços', description: 'Catálogo de serviços oferecidos' },
   '/schedules': { title: 'Agendamentos', description: 'Agenda e ordens de serviço' },
   '/orders': { title: 'Pedidos', description: 'Ordens de serviço com itens e cobrança' },
+  '/payments': { title: 'Pagamentos', description: 'Recebimentos e cobranças dos pedidos' },
   '/products': { title: 'Produtos', description: 'Estoque e produtos' },
   '/loyalty': { title: 'Fidelidade', description: 'Programa de pontos e recompensas' },
   '/reports': { title: 'Relatórios', description: 'Análises e relatórios' },

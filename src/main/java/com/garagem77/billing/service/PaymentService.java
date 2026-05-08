@@ -2,6 +2,8 @@ package com.garagem77.billing.service;
 
 import com.garagem77.billing.entity.Payment;
 import com.garagem77.billing.repository.PaymentRepository;
+import com.garagem77.customer.entity.Customer;
+import com.garagem77.customer.repository.CustomerRepository;
 import com.garagem77.order.entity.Order;
 import com.garagem77.order.repository.OrderRepository;
 import com.garagem77.shared.exception.BusinessRuleException;
@@ -9,6 +11,8 @@ import com.garagem77.shared.exception.DuplicateResourceException;
 import com.garagem77.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
 
     @Transactional(readOnly = true)
     public Payment findByPublicId(UUID publicId) {
@@ -43,6 +48,32 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public List<Payment> findByStatus(String status) {
         return paymentRepository.findByStatus(status);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Payment> findAllPaged(Pageable pageable) {
+        return paymentRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Payment> findByStatusPaged(String status, Pageable pageable) {
+        return paymentRepository.findByStatus(status, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id).orElse(null);
+    }
+
+    public void delete(UUID publicId) {
+        Payment payment = findByPublicId(publicId);
+        paymentRepository.delete(payment);
+        log.info("Pagamento removido: {}", publicId);
     }
 
     public Payment create(UUID orderPublicId, String paymentMethod, BigDecimal amount) {

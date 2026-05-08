@@ -1,6 +1,8 @@
 package com.garagem77.billing.repository;
 
 import com.garagem77.billing.entity.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +34,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     BigDecimal sumAmountByStatusAndPaymentDateAfter(@Param("status") String status, @Param("startDate") LocalDateTime startDate);
 
     Optional<Payment> findByTransactionId(String transactionId);
+
+    Page<Payment> findAll(Pageable pageable);
+
+    Page<Payment> findByStatus(String status, Pageable pageable);
 }

@@ -216,6 +216,30 @@ export interface CreateOrderDTO {
   notes?: string;
 }
 
+// Pagamentos
+export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+export type PaymentMethod = 'PIX' | 'DINHEIRO' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO';
+
+export interface Payment {
+  id: string;
+  orderPublicId?: string;
+  customerName?: string;
+  orderFinalAmount?: number;
+  paymentMethod: PaymentMethod;
+  amount: number;
+  status: PaymentStatus;
+  paymentDate?: string;
+  transactionId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePaymentDTO {
+  orderId: string;
+  paymentMethod: PaymentMethod;
+  amount: number;
+}
+
 // Loyalty
 export interface LoyaltyProgram {
   id: string;
