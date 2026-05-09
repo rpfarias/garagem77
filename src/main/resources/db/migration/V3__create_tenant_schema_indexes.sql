@@ -1,17 +1,18 @@
--- Índices para performance das tabelas de tenant
+-- Índices para performance das tabelas de domínio
 
-CREATE INDEX IF NOT EXISTS idx_customers_cpf ON customers(cpf);
-CREATE INDEX IF NOT EXISTS idx_vehicles_customer_id ON vehicles(customer_id);
-CREATE INDEX IF NOT EXISTS idx_vehicles_plate ON vehicles(plate);
-CREATE INDEX IF NOT EXISTS idx_schedules_customer_id ON schedules(customer_id);
-CREATE INDEX IF NOT EXISTS idx_schedules_vehicle_id ON schedules(vehicle_id);
-CREATE INDEX IF NOT EXISTS idx_schedules_scheduled_at ON schedules(scheduled_at);
-CREATE INDEX IF NOT EXISTS idx_schedules_status ON schedules(status);
-CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
-CREATE INDEX IF NOT EXISTS idx_orders_vehicle_id ON orders(vehicle_id);
-CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
-CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
-CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);
-CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
-CREATE INDEX IF NOT EXISTS idx_product_movements_product_id ON product_movements(product_id);
+CREATE UNIQUE INDEX idx_customer_cpf ON customers(cpf);
+CREATE INDEX idx_vehicle_customer_id ON vehicles(customer_id);
+CREATE UNIQUE INDEX idx_vehicle_plate ON vehicles(plate);
+CREATE UNIQUE INDEX idx_service_name ON services(name);
+CREATE INDEX idx_schedule_customer_id ON schedules(customer_id);
+CREATE INDEX idx_schedule_vehicle_id ON schedules(vehicle_id);
+CREATE INDEX idx_schedule_scheduled_at ON schedules(scheduled_at);
+CREATE INDEX idx_schedule_status ON schedules(status);
+CREATE INDEX idx_order_customer_id ON orders(customer_id);
+CREATE INDEX idx_order_vehicle_id ON orders(vehicle_id);
+CREATE INDEX idx_order_status ON orders(status);
+CREATE INDEX idx_order_created_at ON orders(created_at);
+CREATE INDEX idx_order_item_order_id ON order_items(order_id);
+CREATE INDEX idx_payment_order_id ON payments(order_id);
+CREATE INDEX idx_payment_status ON payments(status);
+CREATE INDEX idx_product_movement_product_id ON product_movements(product_id);

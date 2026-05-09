@@ -1,34 +1,38 @@
--- Schema público (compartilhado entre tenants)
+-- Schema público (companies + users)
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Tabela de Tenants (Empresas)
-CREATE TABLE IF NOT EXISTS tenants (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    slug VARCHAR(50) UNIQUE NOT NULL,
+-- Tabela de Empresas (Companies)
+CREATE TABLE companies (
+    id BIGSERIAL PRIMARY KEY,
+    public_id UUID NOT NULL UNIQUE,
+    slug VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
-    plan_type VARCHAR(50) DEFAULT 'basic',
-    active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    plan_type VARCHAR(50),
+    active BOOLEAN NOT NULL DEFAULT true,
+    schema_name VARCHAR(100),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de Usuários (Super Admin + Admins de tenant)
-CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+CREATE INDEX idx_company_slug ON companies(slug);
+
+-- Tabela de Usuários
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    public_id UUID NOT NULL UNIQUE,
+    company_id BIGINT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
-    active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(tenant_id, email)
+    active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(company_id, email)
 );
 
-CREATE INDEX IF NOT EXISTS idx_users_tenant_id ON users(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_tenants_slug ON tenants(slug);
+CREATE UNIQUE INDEX idx_user_email ON users(email);
+CREATE INDEX idx_user_company_id ON users(company_id);
