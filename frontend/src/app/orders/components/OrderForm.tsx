@@ -162,8 +162,8 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
   };
 
   const selectClass = (hasError: boolean) =>
-    `w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 bg-white border shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-      hasError ? 'border-danger-300' : 'border-slate-200'
+    `w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 dark:disabled:bg-slate-800/60 disabled:cursor-not-allowed ${
+      hasError ? 'border-danger-300 dark:border-danger-700' : 'border-slate-200 dark:border-slate-700'
     }`;
 
   // Calculate total preview
@@ -178,7 +178,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
 
   if (isEditing) {
     return (
-      <div className="text-center py-8 text-sm text-slate-500">
+      <div className="text-center py-8 text-sm text-slate-500 dark:text-slate-400">
         A edição completa de pedidos não está disponível. Use as ações de status na lista.
       </div>
     );
@@ -188,7 +188,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Cliente</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Cliente</label>
           <select
             value={customerId}
             onChange={(e) => setCustomerId(e.target.value)}
@@ -203,12 +203,12 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
             ))}
           </select>
           {errors.customerId && (
-            <span className="text-xs text-danger-600">{errors.customerId}</span>
+            <span className="text-xs text-danger-600 dark:text-danger-400">{errors.customerId}</span>
           )}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Veículo</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Veículo</label>
           <select
             value={vehicleId}
             onChange={(e) => setVehicleId(e.target.value)}
@@ -229,7 +229,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
             ))}
           </select>
           {errors.vehicleId && (
-            <span className="text-xs text-danger-600">{errors.vehicleId}</span>
+            <span className="text-xs text-danger-600 dark:text-danger-400">{errors.vehicleId}</span>
           )}
         </div>
       </div>
@@ -237,7 +237,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
       {/* Items */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-slate-700">Items do pedido</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Items do pedido</label>
           <Button
             type="button"
             variant="outline"
@@ -254,7 +254,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
           {items.map((item, idx) => (
             <div
               key={idx}
-              className="p-3 rounded-lg bg-slate-50 border border-slate-200/60 space-y-2"
+              className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-2"
             >
               <div className="flex items-center gap-2">
                 <select
@@ -263,7 +263,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
                     updateItem(idx, { type: e.target.value as 'SERVICE' | 'PRODUCT' })
                   }
                   disabled={isLoading}
-                  className="px-2 py-1.5 rounded-md border border-slate-200 text-xs font-medium bg-white"
+                  className="px-2 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs font-medium bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
                 >
                   <option value="SERVICE">Serviço</option>
                   <option value="PRODUCT">Produto</option>
@@ -273,8 +273,8 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
                   value={item.refId}
                   onChange={(e) => updateItem(idx, { refId: e.target.value })}
                   disabled={isLoading}
-                  className={`flex-1 px-2 py-1.5 rounded-md text-sm border bg-white ${
-                    errors[`item_${idx}_ref`] ? 'border-danger-300' : 'border-slate-200'
+                  className={`flex-1 px-2 py-1.5 rounded-md text-sm border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 ${
+                    errors[`item_${idx}_ref`] ? 'border-danger-300 dark:border-danger-700' : 'border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   <option value="">Selecione</option>
@@ -295,7 +295,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
                   <button
                     type="button"
                     onClick={() => removeItem(idx)}
-                    className="p-1.5 rounded text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"
+                    className="p-1.5 rounded text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors"
                     title="Remover item"
                   >
                     <TrashIcon className="w-4 h-4" />
@@ -311,12 +311,12 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
                   onChange={(e) => updateItem(idx, { quantity: e.target.value })}
                   disabled={isLoading}
                   placeholder="Qtd"
-                  className={`px-2 py-1.5 rounded-md text-sm bg-white border ${
-                    errors[`item_${idx}_qty`] ? 'border-danger-300' : 'border-slate-200'
+                  className={`px-2 py-1.5 rounded-md text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border ${
+                    errors[`item_${idx}_qty`] ? 'border-danger-300 dark:border-danger-700' : 'border-slate-200 dark:border-slate-700'
                   }`}
                 />
                 <div className="col-span-2 relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-500">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-500 dark:text-slate-400">
                     R$
                   </span>
                   <input
@@ -326,8 +326,8 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
                     onChange={(e) => updateItem(idx, { unitPrice: e.target.value })}
                     disabled={isLoading}
                     placeholder="0,00"
-                    className={`w-full pl-8 pr-2 py-1.5 rounded-md text-sm bg-white border ${
-                      errors[`item_${idx}_price`] ? 'border-danger-300' : 'border-slate-200'
+                    className={`w-full pl-8 pr-2 py-1.5 rounded-md text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border ${
+                      errors[`item_${idx}_price`] ? 'border-danger-300 dark:border-danger-700' : 'border-slate-200 dark:border-slate-700'
                     }`}
                   />
                 </div>
@@ -335,7 +335,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
 
               {(parseInt(item.quantity) || 0) > 0 &&
                 (parseFloat(item.unitPrice.replace(',', '.')) || 0) > 0 && (
-                  <p className="text-xs text-right text-slate-600 font-medium">
+                  <p className="text-xs text-right text-slate-600 dark:text-slate-400 font-medium">
                     Subtotal:{' '}
                     {formatPrice(
                       (parseInt(item.quantity) || 0) *
@@ -348,9 +348,9 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
         </div>
 
         {totalPreview > 0 && (
-          <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-200 flex items-center justify-between">
-            <span className="text-sm font-medium text-primary-700">Total estimado</span>
-            <span className="text-lg font-bold text-primary-700 tabular-nums">
+          <div className="mt-3 p-3 rounded-lg bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-900/60 flex items-center justify-between">
+            <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Total estimado</span>
+            <span className="text-lg font-bold text-primary-700 dark:text-primary-300 tabular-nums">
               {formatPrice(totalPreview)}
             </span>
           </div>
@@ -358,7 +358,7 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">Observações</label>
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Observações</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -366,11 +366,11 @@ export function OrderForm({ order, onSuccess, onCancel }: OrderFormProps) {
           rows={2}
           maxLength={500}
           placeholder="Detalhes adicionais..."
-          className="w-full px-3.5 py-2.5 rounded-lg text-sm bg-white border border-slate-200 shadow-sm focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 resize-none"
+          className="w-full px-3.5 py-2.5 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 shadow-sm focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 resize-none"
         />
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>

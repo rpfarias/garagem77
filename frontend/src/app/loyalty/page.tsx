@@ -112,7 +112,7 @@ function ProgramForm({ program, onSuccess, onCancel }: ProgramFormProps) {
         helpText="Quantos pontos o cliente ganha por R$ 1 gasto"
       />
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
@@ -192,11 +192,11 @@ function PointsForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-1">
-        <p className="text-xs text-slate-500">Cliente</p>
-        <p className="text-sm font-medium text-slate-900">{customerName}</p>
-        <p className="text-xs text-slate-500 mt-2">Saldo atual</p>
-        <p className="text-lg font-bold text-primary-600 tabular-nums">
+      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4 space-y-1">
+        <p className="text-xs text-slate-500 dark:text-slate-400">Cliente</p>
+        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{customerName}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Saldo atual</p>
+        <p className="text-lg font-bold text-primary-600 dark:text-primary-400 tabular-nums">
           {currentBalance} pontos
         </p>
       </div>
@@ -220,7 +220,7 @@ function PointsForm({
         placeholder={mode === 'ADD' ? 'Ex: Bônus de aniversário' : 'Ex: Desconto na lavagem'}
       />
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
@@ -263,22 +263,22 @@ function TransactionsModal({ isOpen, onClose, loyaltyPointId, customerName }: Tr
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Extrato de pontos" description={customerName} size="lg">
       {isLoading ? (
-        <p className="text-sm text-slate-500 py-4">Carregando...</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 py-4">Carregando...</p>
       ) : !data || data.length === 0 ? (
         <div className="py-12 text-center">
-          <ChartIcon className="w-8 h-8 mx-auto text-slate-300" />
-          <p className="text-sm text-slate-500 mt-2">Sem transações ainda.</p>
+          <ChartIcon className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" />
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Sem transações ainda.</p>
         </div>
       ) : (
-        <div className="divide-y divide-slate-100 -mx-6">
+        <div className="divide-y divide-slate-100 dark:divide-slate-800 -mx-6">
           {data.map((tx) => (
             <div key={tx.id} className="px-6 py-3 flex items-center gap-3">
               <div
                 className={clsx(
                   'w-9 h-9 rounded-full flex items-center justify-center shrink-0',
                   tx.transactionType === 'EARN'
-                    ? 'bg-success-50 text-success-600'
-                    : 'bg-warning-50 text-warning-600'
+                    ? 'bg-success-50 text-success-600 dark:bg-success-950/40 dark:text-success-400'
+                    : 'bg-warning-50 text-warning-600 dark:bg-warning-950/40 dark:text-warning-400'
                 )}
               >
                 {tx.transactionType === 'EARN' ? (
@@ -288,15 +288,15 @@ function TransactionsModal({ isOpen, onClose, loyaltyPointId, customerName }: Tr
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
                   {tx.description || (tx.transactionType === 'EARN' ? 'Pontos ganhos' : 'Pontos resgatados')}
                 </p>
-                <p className="text-xs text-slate-500">{formatDateTime(tx.createdAt)}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{formatDateTime(tx.createdAt)}</p>
               </div>
               <span
                 className={clsx(
                   'font-bold tabular-nums shrink-0',
-                  tx.transactionType === 'EARN' ? 'text-success-700' : 'text-warning-700'
+                  tx.transactionType === 'EARN' ? 'text-success-700 dark:text-success-300' : 'text-warning-700 dark:text-warning-300'
                 )}
               >
                 {tx.transactionType === 'EARN' ? '+' : '−'}
@@ -426,16 +426,16 @@ export default function LoyaltyPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center">
-                <SparkleIcon className="w-5 h-5 text-primary-600" />
+              <div className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-950/40 flex items-center justify-center">
+                <SparkleIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Programa ativo</p>
-                <p className="text-base font-bold text-slate-900 truncate">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Programa ativo</p>
+                <p className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
                   {activeProgram?.name || '—'}
                 </p>
                 {activeProgram && (
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {formatPointsRatio(Number(activeProgram.pointsPerReal))}
                   </p>
                 )}
@@ -445,12 +445,12 @@ export default function LoyaltyPage() {
 
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-success-50 flex items-center justify-center">
-                <UsersIcon className="w-5 h-5 text-success-600" />
+              <div className="w-11 h-11 rounded-xl bg-success-50 dark:bg-success-950/40 flex items-center justify-center">
+                <UsersIcon className="w-5 h-5 text-success-600 dark:text-success-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Clientes inscritos</p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Clientes inscritos</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {balancesData?.totalElements ?? 0}
                 </p>
               </div>
@@ -459,12 +459,12 @@ export default function LoyaltyPage() {
 
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-warning-50 flex items-center justify-center">
-                <TrendUpIcon className="w-5 h-5 text-warning-600" />
+              <div className="w-11 h-11 rounded-xl bg-warning-50 dark:bg-warning-950/40 flex items-center justify-center">
+                <TrendUpIcon className="w-5 h-5 text-warning-600 dark:text-warning-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Pontos em circulação (página)</p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Pontos em circulação (página)</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {totalPoints.toLocaleString('pt-BR')}
                 </p>
               </div>
@@ -474,15 +474,15 @@ export default function LoyaltyPage() {
 
         {/* Tabs Card */}
         <Card>
-          <div className="px-5 pt-3 border-b border-slate-100 flex items-center justify-between gap-4">
+          <div className="px-5 pt-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
             <div className="flex gap-1 overflow-x-auto">
               <button
                 onClick={() => setTab('PROGRAMS')}
                 className={clsx(
                   'px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                   tab === 'PROGRAMS'
-                    ? 'border-primary-600 text-primary-700'
-                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                    ? 'border-primary-600 text-primary-700 dark:text-primary-300'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 )}
               >
                 Programas
@@ -492,8 +492,8 @@ export default function LoyaltyPage() {
                 className={clsx(
                   'px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                   tab === 'BALANCES'
-                    ? 'border-primary-600 text-primary-700'
-                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                    ? 'border-primary-600 text-primary-700 dark:text-primary-300'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 )}
               >
                 Saldos por cliente
@@ -530,17 +530,17 @@ export default function LoyaltyPage() {
             <>
               {loadingPrograms ? (
                 <div className="py-20 text-center">
-                  <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin mx-auto" />
+                  <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin mx-auto" />
                 </div>
               ) : programs.length === 0 ? (
                 <div className="py-20 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <SparkleIcon className="w-8 h-8 text-slate-400" />
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                    <SparkleIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                   </div>
-                  <h3 className="text-base font-semibold text-slate-900">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     Nenhum programa cadastrado
                   </h3>
-                  <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                     Crie um programa de fidelidade para começar a recompensar seus clientes.
                   </p>
                   <Button
@@ -573,7 +573,7 @@ export default function LoyaltyPage() {
                                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shrink-0">
                                   <SparkleIcon className="w-4 h-4 text-white" />
                                 </div>
-                                <p className="font-medium text-slate-900">{p.name}</p>
+                                <p className="font-medium text-slate-900 dark:text-slate-100">{p.name}</p>
                               </div>
                             </td>
                             <td className="font-mono tabular-nums">
@@ -605,19 +605,19 @@ export default function LoyaltyPage() {
                                 <div className="flex items-center justify-end gap-1">
                                   <button
                                     onClick={() => toggleProgramActive(p.id)}
-                                    className="text-xs px-2 py-1 rounded text-slate-500 hover:text-primary-700 hover:bg-primary-50"
+                                    className="text-xs px-2 py-1 rounded text-slate-500 dark:text-slate-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-950/40"
                                   >
                                     {p.active ? 'Desativar' : 'Ativar'}
                                   </button>
                                   <button
                                     onClick={() => setProgramModal({ open: true, editing: p })}
-                                    className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50"
+                                    className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/40"
                                   >
                                     <EditIcon className="w-4 h-4" />
                                   </button>
                                   <button
                                     onClick={() => setDeletingProgramId(p.id)}
-                                    className="p-2 rounded-lg text-slate-400 hover:text-danger-600 hover:bg-danger-50"
+                                    className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40"
                                   >
                                     <TrashIcon className="w-4 h-4" />
                                   </button>
@@ -633,8 +633,8 @@ export default function LoyaltyPage() {
               )}
 
               {(programsData?.totalPages || 0) > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Página {programPage + 1} de {programsData?.totalPages}
                   </p>
                   <div className="flex gap-2">
@@ -655,15 +655,15 @@ export default function LoyaltyPage() {
             <>
               {loadingBalances ? (
                 <div className="py-20 text-center">
-                  <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin mx-auto" />
+                  <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin mx-auto" />
                 </div>
               ) : balances.length === 0 ? (
                 <div className="py-20 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <UsersIcon className="w-8 h-8 text-slate-400" />
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                    <UsersIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                   </div>
-                  <h3 className="text-base font-semibold text-slate-900">Nenhum cliente inscrito</h3>
-                  <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Nenhum cliente inscrito</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                     {activeProgram
                       ? 'Adicione clientes ao programa de fidelidade para começar.'
                       : 'Crie e ative um programa de fidelidade primeiro.'}
@@ -685,18 +685,18 @@ export default function LoyaltyPage() {
                         <tr key={b.id}>
                           <td>
                             <div>
-                              <p className="font-medium text-slate-900">{b.customerName || '-'}</p>
+                              <p className="font-medium text-slate-900 dark:text-slate-100">{b.customerName || '-'}</p>
                               {b.customerCpf && (
-                                <p className="text-xs text-slate-500 font-mono">{b.customerCpf}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{b.customerCpf}</p>
                               )}
                             </div>
                           </td>
-                          <td className="text-slate-600">{b.programName || '-'}</td>
+                          <td className="text-slate-600 dark:text-slate-400">{b.programName || '-'}</td>
                           <td>
-                            <span className="text-lg font-bold text-primary-700 tabular-nums">
+                            <span className="text-lg font-bold text-primary-700 dark:text-primary-300 tabular-nums">
                               {b.pointsBalance.toLocaleString('pt-BR')}
                             </span>
-                            <span className="text-xs text-slate-500 ml-1">pontos</span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1">pontos</span>
                           </td>
                           <td>
                             <div className="flex items-center justify-end gap-1">
@@ -704,7 +704,7 @@ export default function LoyaltyPage() {
                                 onClick={() =>
                                   setTxModal({ open: true, pointId: b.id, customerName: b.customerName || '' })
                                 }
-                                className="text-xs px-2 py-1 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                                className="text-xs px-2 py-1 rounded text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
                                 title="Ver extrato"
                               >
                                 Extrato
@@ -752,8 +752,8 @@ export default function LoyaltyPage() {
               )}
 
               {(balancesData?.totalPages || 0) > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Página {balancePage + 1} de {balancesData?.totalPages}
                   </p>
                   <div className="flex gap-2">
@@ -823,7 +823,7 @@ export default function LoyaltyPage() {
       >
         <div className="space-y-2 max-h-96 overflow-y-auto -mx-6 px-6">
           {customers.length === 0 ? (
-            <p className="text-sm text-slate-500 py-4 text-center">Sem clientes cadastrados.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 py-4 text-center">Sem clientes cadastrados.</p>
           ) : (
             customers.map((c) => {
               const alreadyEnrolled = balances.some((b) => b.customerPublicId === c.id);
@@ -836,13 +836,13 @@ export default function LoyaltyPage() {
                   className={clsx(
                     'w-full px-4 py-3 rounded-lg border flex items-center justify-between transition-colors',
                     alreadyEnrolled
-                      ? 'bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed'
-                      : 'border-slate-200 hover:bg-primary-50 hover:border-primary-300'
+                      ? 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                      : 'border-slate-200 dark:border-slate-700 hover:bg-primary-50 dark:hover:bg-primary-950/40 hover:border-primary-300 dark:hover:border-primary-700'
                   )}
                 >
                   <div className="text-left">
-                    <p className="text-sm font-medium text-slate-900">{c.name}</p>
-                    <p className="text-xs text-slate-500 font-mono">{c.cpf}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{c.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{c.cpf}</p>
                   </div>
                   {alreadyEnrolled && (
                     <Badge variant="default">Já inscrito</Badge>

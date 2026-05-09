@@ -137,14 +137,14 @@ export function VehicleForm({ vehicle, onSuccess, onCancel }: VehicleFormProps) 
       <div className="space-y-4">
         {!isEditing && (
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-slate-700">Cliente</label>
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Cliente</label>
             <select
               name="customerId"
               value={formData.customerId}
               onChange={handleChange}
               disabled={isLoading || loadingCustomers}
-              className={`w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 bg-white border shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                errors.customerId ? 'border-danger-300' : 'border-slate-200'
+              className={`w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 dark:disabled:bg-slate-800 disabled:cursor-not-allowed ${
+                errors.customerId ? 'border-danger-300 dark:border-danger-700' : 'border-slate-200 dark:border-slate-700'
               }`}
             >
               <option value="">
@@ -157,7 +157,7 @@ export function VehicleForm({ vehicle, onSuccess, onCancel }: VehicleFormProps) 
               ))}
             </select>
             {errors.customerId && (
-              <span className="text-xs text-danger-600">{errors.customerId}</span>
+              <span className="text-xs text-danger-600 dark:text-danger-400">{errors.customerId}</span>
             )}
           </div>
         )}
@@ -224,7 +224,7 @@ export function VehicleForm({ vehicle, onSuccess, onCancel }: VehicleFormProps) 
         />
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Observações</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Observações</label>
           <textarea
             name="observations"
             value={formData.observations}
@@ -233,15 +233,15 @@ export function VehicleForm({ vehicle, onSuccess, onCancel }: VehicleFormProps) 
             rows={3}
             maxLength={500}
             placeholder="Detalhes adicionais sobre o veículo..."
-            className="w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 disabled:cursor-not-allowed resize-none"
+            className="w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 dark:disabled:bg-slate-800 disabled:cursor-not-allowed resize-none"
           />
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             {formData.observations.length}/500 caracteres
           </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>

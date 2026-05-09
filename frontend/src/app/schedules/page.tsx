@@ -152,7 +152,7 @@ export default function SchedulesPage() {
         {/* Action header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500">Total</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Total</span>
             <Badge variant="default" size="md">
               {totalElements} {totalElements === 1 ? 'agendamento' : 'agendamentos'}
             </Badge>
@@ -169,7 +169,7 @@ export default function SchedulesPage() {
 
         <Card>
           {/* Status Tabs */}
-          <div className="px-5 pt-3 border-b border-slate-100 overflow-x-auto">
+          <div className="px-5 pt-3 border-b border-slate-100 dark:border-slate-800 overflow-x-auto">
             <div className="flex gap-1 min-w-fit">
               {STATUS_TABS.map((tab) => {
                 const isActive = statusFilter === tab.key;
@@ -180,8 +180,8 @@ export default function SchedulesPage() {
                     className={clsx(
                       'px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                       isActive
-                        ? 'border-primary-600 text-primary-700'
-                        : 'border-transparent text-slate-500 hover:text-slate-900'
+                        ? 'border-primary-600 text-primary-700 dark:text-primary-300'
+                        : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                     )}
                   >
                     {tab.label}
@@ -194,20 +194,20 @@ export default function SchedulesPage() {
           {/* Content */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-slate-500">Carregando agendamentos...</p>
+              <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin" />
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Carregando agendamentos...</p>
             </div>
           ) : !data?.content || data.content.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <CalendarIcon className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                <CalendarIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {statusFilter !== 'ALL'
                   ? `Nenhum agendamento ${STATUS_LABELS[statusFilter as ScheduleStatus].toLowerCase()}`
                   : 'Nenhum agendamento ainda'}
               </h3>
-              <p className="mt-1 text-sm text-slate-500 max-w-sm">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm">
                 {statusFilter !== 'ALL'
                   ? 'Quando houver agendamentos com este status, eles aparecerão aqui.'
                   : 'Crie seu primeiro agendamento ligando um cliente, veículo e serviço.'}
@@ -226,7 +226,7 @@ export default function SchedulesPage() {
             </div>
           ) : (
             <>
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
                 {data.content.map((schedule) => {
                   const dt = formatDateTime(schedule.scheduledAt);
                   const isCancellable =
@@ -238,15 +238,15 @@ export default function SchedulesPage() {
                   return (
                     <div
                       key={schedule.id}
-                      className="p-5 hover:bg-slate-50/50 transition-colors flex flex-col lg:flex-row lg:items-center gap-4"
+                      className="p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors flex flex-col lg:flex-row lg:items-center gap-4"
                     >
                       {/* Date block */}
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200/60 flex flex-col items-center justify-center shrink-0">
-                          <span className="text-2xs font-semibold text-primary-600 uppercase">
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950/40 dark:to-primary-900/40 border border-primary-200/60 dark:border-primary-900/60 flex flex-col items-center justify-center shrink-0">
+                          <span className="text-2xs font-semibold text-primary-600 dark:text-primary-400 uppercase">
                             {dt.date.split(' ')[1]}
                           </span>
-                          <span className="text-lg font-bold text-primary-700 tabular-nums leading-none">
+                          <span className="text-lg font-bold text-primary-700 dark:text-primary-300 tabular-nums leading-none">
                             {dt.date.split(' ')[0]}
                           </span>
                         </div>
@@ -254,10 +254,10 @@ export default function SchedulesPage() {
                         {/* Info */}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-sm font-bold text-slate-900 tabular-nums">
+                            <span className="text-sm font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                               {dt.time}
                             </span>
-                            <span className="text-xs text-slate-400">•</span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500">•</span>
                             <Badge
                               variant={STATUS_VARIANT[schedule.status]}
                               dot
@@ -265,22 +265,22 @@ export default function SchedulesPage() {
                               {STATUS_LABELS[schedule.status]}
                             </Badge>
                           </div>
-                          <p className="font-medium text-slate-900 truncate">
+                          <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
                             {schedule.serviceName || 'Serviço'}
                             {schedule.servicePrice && (
-                              <span className="text-slate-500 font-normal ml-2">
+                              <span className="text-slate-500 dark:text-slate-400 font-normal ml-2">
                                 {formatPrice(Number(schedule.servicePrice))}
                               </span>
                             )}
                           </p>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+                          <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
                             <span className="truncate">{schedule.customerName || 'Cliente'}</span>
                             {schedule.vehiclePlate && (
                               <>
                                 <span>•</span>
                                 <span className="inline-flex items-center gap-1">
                                   <CarIcon className="w-3 h-3" />
-                                  <span className="font-mono font-bold text-slate-700">
+                                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
                                     {schedule.vehiclePlate}
                                   </span>
                                   {schedule.vehicleModel && (
@@ -291,7 +291,7 @@ export default function SchedulesPage() {
                             )}
                           </div>
                           {schedule.notes && (
-                            <p className="text-xs text-slate-500 mt-1.5 italic line-clamp-1">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 italic line-clamp-1">
                               "{schedule.notes}"
                             </p>
                           )}
@@ -302,7 +302,7 @@ export default function SchedulesPage() {
                       <div className="flex items-center gap-2 shrink-0">
                         {deletingId === schedule.id ? (
                           <>
-                            <p className="text-xs text-danger-700 mr-2">Excluir?</p>
+                            <p className="text-xs text-danger-700 dark:text-danger-300 mr-2">Excluir?</p>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -348,7 +348,7 @@ export default function SchedulesPage() {
                               <button
                                 onClick={() => patchAction(schedule.id, 'cancel')}
                                 disabled={isInAction}
-                                className="text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-danger-700 hover:bg-danger-50 transition-colors disabled:opacity-50"
+                                className="text-xs px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-danger-700 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors disabled:opacity-50"
                                 title="Cancelar"
                               >
                                 Cancelar
@@ -357,7 +357,7 @@ export default function SchedulesPage() {
                             {schedule.status === 'SCHEDULED' && (
                               <button
                                 onClick={() => setEditing(schedule)}
-                                className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                                className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/40 transition-colors"
                                 title="Editar"
                               >
                                 <EditIcon className="w-4 h-4" />
@@ -365,7 +365,7 @@ export default function SchedulesPage() {
                             )}
                             <button
                               onClick={() => setDeletingId(schedule.id)}
-                              className="p-2 rounded-lg text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"
+                              className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors"
                               title="Remover"
                             >
                               <TrashIcon className="w-4 h-4" />
@@ -379,10 +379,10 @@ export default function SchedulesPage() {
               </div>
 
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
-                    Página <span className="font-medium text-slate-900">{currentPage}</span> de{' '}
-                    <span className="font-medium text-slate-900">{totalPages}</span>
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Página <span className="font-medium text-slate-900 dark:text-slate-100">{currentPage}</span> de{' '}
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

@@ -146,12 +146,12 @@ export default function ProductsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center">
-                <PackageIcon className="w-5 h-5 text-primary-600" />
+              <div className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-950/40 flex items-center justify-center">
+                <PackageIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Total cadastrados</p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total cadastrados</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {totalElements}
                 </p>
               </div>
@@ -160,12 +160,12 @@ export default function ProductsPage() {
 
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-warning-50 flex items-center justify-center">
-                <TrendDownIcon className="w-5 h-5 text-warning-600" />
+              <div className="w-11 h-11 rounded-xl bg-warning-50 dark:bg-warning-950/40 flex items-center justify-center">
+                <TrendDownIcon className="w-5 h-5 text-warning-600 dark:text-warning-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Estoque baixo (página)</p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Estoque baixo (página)</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {lowStockCount + outOfStockCount}
                 </p>
               </div>
@@ -174,12 +174,12 @@ export default function ProductsPage() {
 
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-success-50 flex items-center justify-center">
-                <TrendUpIcon className="w-5 h-5 text-success-600" />
+              <div className="w-11 h-11 rounded-xl bg-success-50 dark:bg-success-950/40 flex items-center justify-center">
+                <TrendUpIcon className="w-5 h-5 text-success-600 dark:text-success-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Valor em estoque (página)</p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Valor em estoque (página)</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {formatPrice(totalValue)}
                 </p>
               </div>
@@ -190,7 +190,7 @@ export default function ProductsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500">Total</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Total</span>
             <Badge variant="default" size="md">
               {totalElements} {totalElements === 1 ? 'produto' : 'produtos'}
             </Badge>
@@ -207,7 +207,7 @@ export default function ProductsPage() {
 
         <Card>
           {/* Search */}
-          <div className="p-5 border-b border-slate-100">
+          <div className="p-5 border-b border-slate-100 dark:border-slate-800">
             <div className="max-w-md">
               <Input
                 placeholder="Buscar por nome..."
@@ -221,18 +221,18 @@ export default function ProductsPage() {
           {/* Content */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-slate-500">Carregando produtos...</p>
+              <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin" />
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Carregando produtos...</p>
             </div>
           ) : !data?.content || data.content.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <PackageIcon className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                <PackageIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {debouncedSearch ? 'Nenhum produto encontrado' : 'Nenhum produto cadastrado'}
               </h3>
-              <p className="mt-1 text-sm text-slate-500 max-w-sm">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm">
                 {debouncedSearch
                   ? `Não encontramos produtos com "${debouncedSearch}".`
                   : 'Cadastre os produtos do seu inventário para controlar o estoque.'}
@@ -276,11 +276,11 @@ export default function ProductsPage() {
                                   <PackageIcon className="w-5 h-5 text-white" />
                                 </div>
                                 <div className="min-w-0 max-w-md">
-                                  <p className="font-medium text-slate-900 truncate">
+                                  <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
                                     {product.name}
                                   </p>
                                   {product.description && (
-                                    <p className="text-xs text-slate-500 truncate">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                       {product.description}
                                     </p>
                                   )}
@@ -289,31 +289,31 @@ export default function ProductsPage() {
                             </td>
                             <td>
                               {product.sku ? (
-                                <code className="text-xs font-mono px-2 py-0.5 bg-slate-100 text-slate-700 rounded">
+                                <code className="text-xs font-mono px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded">
                                   {product.sku}
                                 </code>
                               ) : (
-                                <span className="text-slate-400 text-xs">-</span>
+                                <span className="text-slate-400 dark:text-slate-500 text-xs">-</span>
                               )}
                             </td>
                             <td>
-                              <span className="font-semibold text-slate-900 tabular-nums">
+                              <span className="font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
                                 {formatPrice(Number(product.unitPrice))}
                               </span>
                             </td>
                             <td>
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-900 tabular-nums">
+                                <span className="font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                                   {product.quantityStock}
                                 </span>
-                                <span className="text-xs text-slate-400">
+                                <span className="text-xs text-slate-400 dark:text-slate-500">
                                   / mín {product.minimumQuantity}
                                 </span>
                                 <div className="flex items-center gap-0.5">
                                   <button
                                     onClick={() => stockOperation(product.id, 'decrease')}
                                     disabled={isStockBusy}
-                                    className="w-6 h-6 rounded text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors text-sm font-bold disabled:opacity-30"
+                                    className="w-6 h-6 rounded text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors text-sm font-bold disabled:opacity-30"
                                     title="Remover estoque"
                                   >
                                     −
@@ -321,7 +321,7 @@ export default function ProductsPage() {
                                   <button
                                     onClick={() => stockOperation(product.id, 'increase')}
                                     disabled={isStockBusy}
-                                    className="w-6 h-6 rounded text-slate-400 hover:text-success-600 hover:bg-success-50 transition-colors text-sm font-bold disabled:opacity-30"
+                                    className="w-6 h-6 rounded text-slate-400 dark:text-slate-500 hover:text-success-600 dark:hover:text-success-400 hover:bg-success-50 dark:hover:bg-success-950/40 transition-colors text-sm font-bold disabled:opacity-30"
                                     title="Adicionar estoque"
                                   >
                                     +
@@ -358,14 +358,14 @@ export default function ProductsPage() {
                                 <div className="flex items-center justify-end gap-1">
                                   <button
                                     onClick={() => setEditing(product)}
-                                    className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                                    className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/40 transition-colors"
                                     title="Editar"
                                   >
                                     <EditIcon className="w-4 h-4" />
                                   </button>
                                   <button
                                     onClick={() => setDeletingId(product.id)}
-                                    className="p-2 rounded-lg text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"
+                                    className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors"
                                     title="Remover"
                                   >
                                     <TrashIcon className="w-4 h-4" />
@@ -376,8 +376,8 @@ export default function ProductsPage() {
                           </tr>
                           {deletingId === product.id && (
                             <tr>
-                              <td colSpan={6} className="!py-3 bg-danger-50/40">
-                                <p className="text-xs text-danger-700 text-center">
+                              <td colSpan={6} className="!py-3 bg-danger-50/40 dark:bg-danger-950/30">
+                                <p className="text-xs text-danger-700 dark:text-danger-300 text-center">
                                   Tem certeza que deseja remover{' '}
                                   <strong>{product.name}</strong>?
                                 </p>
@@ -392,10 +392,10 @@ export default function ProductsPage() {
               </div>
 
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
-                    Página <span className="font-medium text-slate-900">{currentPage}</span> de{' '}
-                    <span className="font-medium text-slate-900">{totalPages}</span>
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Página <span className="font-medium text-slate-900 dark:text-slate-100">{currentPage}</span> de{' '}
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

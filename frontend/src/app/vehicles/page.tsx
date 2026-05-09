@@ -106,7 +106,7 @@ export default function VehiclesPage() {
         {/* Main Card */}
         <Card>
           {/* Search Bar */}
-          <div className="p-5 border-b border-slate-100">
+          <div className="p-5 border-b border-slate-100 dark:border-slate-800">
             <div className="max-w-md">
               <Input
                 placeholder="Buscar por placa..."
@@ -120,18 +120,18 @@ export default function VehiclesPage() {
           {/* Content */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-slate-500">Carregando veículos...</p>
+              <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin" />
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Carregando veículos...</p>
             </div>
           ) : !data?.content || data.content.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <CarIcon className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                <CarIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {debouncedSearch ? 'Nenhum veículo encontrado' : 'Nenhum veículo cadastrado'}
               </h3>
-              <p className="mt-1 text-sm text-slate-500 max-w-sm">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm">
                 {debouncedSearch
                   ? `Não encontramos veículos com a placa "${debouncedSearch}".`
                   : 'Cadastre veículos para vincular a clientes e agendamentos.'}
@@ -172,11 +172,11 @@ export default function VehiclesPage() {
                                 <CarIcon className="w-5 h-5 text-white" />
                               </div>
                               <div className="min-w-0">
-                                <p className="font-medium text-slate-900 truncate">
+                                <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
                                   {vehicle.brand ? `${vehicle.brand} ${vehicle.model}` : vehicle.model}
                                 </p>
                                 {vehicle.color && (
-                                  <p className="text-xs text-slate-500 truncate">
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                     {vehicle.color}
                                   </p>
                                 )}
@@ -184,19 +184,19 @@ export default function VehiclesPage() {
                             </div>
                           </td>
                           <td>
-                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-900 text-white font-mono text-xs font-bold tracking-wider">
+                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-900 dark:bg-slate-700 text-white font-mono text-xs font-bold tracking-wider">
                               {formatPlate(vehicle.plate)}
                             </span>
                           </td>
-                          <td className="text-slate-600">
+                          <td className="text-slate-600 dark:text-slate-400">
                             {vehicle.customerName || (
-                              <span className="text-slate-400 italic">-</span>
+                              <span className="text-slate-400 dark:text-slate-500 italic">-</span>
                             )}
                           </td>
-                          <td className="text-slate-600 tabular-nums">
+                          <td className="text-slate-600 dark:text-slate-400 tabular-nums">
                             {vehicle.year || '-'}
                           </td>
-                          <td className="text-slate-500 text-xs">
+                          <td className="text-slate-500 dark:text-slate-400 text-xs">
                             {vehicle.createdAt
                               ? new Date(vehicle.createdAt).toLocaleDateString('pt-BR')
                               : '-'}
@@ -225,14 +225,14 @@ export default function VehiclesPage() {
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   onClick={() => handleEditClick(vehicle)}
-                                  className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                                  className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:text-primary-400 dark:hover:bg-primary-950/40 transition-colors"
                                   title="Editar"
                                 >
                                   <EditIcon className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteClick(vehicle.id)}
-                                  className="p-2 rounded-lg text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"
+                                  className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-danger-600 hover:bg-danger-50 dark:hover:text-danger-400 dark:hover:bg-danger-950/40 transition-colors"
                                   title="Excluir"
                                 >
                                   <TrashIcon className="w-4 h-4" />
@@ -243,8 +243,8 @@ export default function VehiclesPage() {
                         </tr>
                         {deletingId === vehicle.id && (
                           <tr>
-                            <td colSpan={6} className="!py-3 bg-danger-50/40">
-                              <p className="text-xs text-danger-700 text-center">
+                            <td colSpan={6} className="!py-3 bg-danger-50/40 dark:bg-danger-950/20">
+                              <p className="text-xs text-danger-700 dark:text-danger-400 text-center">
                                 Tem certeza que deseja excluir o veículo{' '}
                                 <strong>{formatPlate(vehicle.plate)}</strong>? Esta ação não pode ser desfeita.
                               </p>
@@ -259,10 +259,10 @@ export default function VehiclesPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
-                    Página <span className="font-medium text-slate-900">{currentPage}</span> de{' '}
-                    <span className="font-medium text-slate-900">{totalPages}</span>
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Página <span className="font-medium text-slate-900 dark:text-slate-100">{currentPage}</span> de{' '}
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

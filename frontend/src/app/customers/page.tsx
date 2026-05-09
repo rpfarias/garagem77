@@ -100,7 +100,7 @@ export default function CustomersPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500">Total</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Total</span>
               <Badge variant="default" size="md">
                 {totalElements} {totalElements === 1 ? 'cliente' : 'clientes'}
               </Badge>
@@ -119,7 +119,7 @@ export default function CustomersPage() {
         {/* Main Card */}
         <Card>
           {/* Search Bar */}
-          <div className="p-5 border-b border-slate-100">
+          <div className="p-5 border-b border-slate-100 dark:border-slate-800">
             <div className="max-w-md">
               <Input
                 placeholder="Buscar por nome..."
@@ -133,18 +133,18 @@ export default function CustomersPage() {
           {/* Content */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-slate-500">Carregando clientes...</p>
+              <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin" />
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Carregando clientes...</p>
             </div>
           ) : !data?.content || data.content.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <UsersIcon className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                <UsersIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {debouncedSearch ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}
               </h3>
-              <p className="mt-1 text-sm text-slate-500 max-w-sm">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm">
                 {debouncedSearch
                   ? `Não encontramos clientes com "${debouncedSearch}". Tente outra busca.`
                   : 'Comece cadastrando seu primeiro cliente para gerenciar seu negócio.'}
@@ -184,20 +184,20 @@ export default function CustomersPage() {
                                 {getInitials(customer.name)}
                               </div>
                               <div className="min-w-0">
-                                <p className="font-medium text-slate-900 truncate">
+                                <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
                                   {customer.name}
                                 </p>
-                                <p className="text-xs text-slate-500 truncate">
+                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                   {customer.email}
                                 </p>
                               </div>
                             </div>
                           </td>
-                          <td className="font-mono text-xs text-slate-600">
+                          <td className="font-mono text-xs text-slate-600 dark:text-slate-400">
                             {formatCpf(customer.cpf)}
                           </td>
-                          <td className="text-slate-600">{customer.phone || '-'}</td>
-                          <td className="text-slate-500 text-xs">
+                          <td className="text-slate-600 dark:text-slate-400">{customer.phone || '-'}</td>
+                          <td className="text-slate-500 dark:text-slate-400 text-xs">
                             {customer.createdAt
                               ? new Date(customer.createdAt).toLocaleDateString('pt-BR')
                               : '-'}
@@ -226,14 +226,14 @@ export default function CustomersPage() {
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   onClick={() => handleEditClick(customer)}
-                                  className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                                  className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/40 transition-colors"
                                   title="Editar"
                                 >
                                   <EditIcon className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteClick(customer.id)}
-                                  className="p-2 rounded-lg text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"
+                                  className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors"
                                   title="Excluir"
                                 >
                                   <TrashIcon className="w-4 h-4" />
@@ -244,8 +244,8 @@ export default function CustomersPage() {
                         </tr>
                         {deletingId === customer.id && (
                           <tr>
-                            <td colSpan={5} className="!py-3 bg-danger-50/40">
-                              <p className="text-xs text-danger-700 text-center">
+                            <td colSpan={5} className="!py-3 bg-danger-50/40 dark:bg-danger-950/30">
+                              <p className="text-xs text-danger-700 dark:text-danger-300 text-center">
                                 Tem certeza que deseja excluir <strong>{customer.name}</strong>? Esta ação não pode ser desfeita.
                               </p>
                             </td>
@@ -259,10 +259,10 @@ export default function CustomersPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
-                    Página <span className="font-medium text-slate-900">{currentPage}</span> de{' '}
-                    <span className="font-medium text-slate-900">{totalPages}</span>
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Página <span className="font-medium text-slate-900 dark:text-slate-100">{currentPage}</span> de{' '}
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

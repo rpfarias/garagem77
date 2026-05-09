@@ -145,7 +145,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         />
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Descrição</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Descrição</label>
           <textarea
             name="description"
             value={formData.description}
@@ -154,7 +154,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             rows={2}
             maxLength={500}
             placeholder="Detalhes do produto..."
-            className="w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 disabled:cursor-not-allowed resize-none"
+            className="w-full px-3.5 py-2.5 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm transition-all focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 dark:disabled:bg-slate-800/60 disabled:cursor-not-allowed resize-none"
           />
         </div>
 
@@ -181,7 +181,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             onChange={handleChange}
             error={errors.unitPrice}
             disabled={isLoading}
-            leftIcon={<span className="text-slate-500 text-sm font-medium">R$</span>}
+            leftIcon={<span className="text-slate-500 dark:text-slate-400 text-sm font-medium">R$</span>}
           />
         </div>
 
@@ -216,7 +216,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>

@@ -110,12 +110,12 @@ function CompanySection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 pb-5 border-b border-slate-100">
+      <div className="flex items-center gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-2xl shadow-sm">
           {company.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-slate-900 truncate">{company.name}</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 truncate">{company.name}</h3>
           <div className="flex items-center gap-2 mt-1">
             <code className="text-xs font-mono text-slate-500">@{company.slug}</code>
             <span className="text-slate-300">•</span>
@@ -153,7 +153,7 @@ function CompanySection() {
             placeholder="(11) 99999-9999"
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="secondary" onClick={() => setEditing(false)} disabled={isSaving}>
               Cancelar
             </Button>
@@ -170,7 +170,7 @@ function CompanySection() {
           <FieldRow label="Plano" value={company.planType} />
           <FieldRow label="Slug" value={`@${company.slug}`} mono />
 
-          <div className="pt-4 border-t border-slate-100">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button variant="primary" onClick={() => setEditing(true)}>
               Editar empresa
             </Button>
@@ -240,12 +240,12 @@ function ProfileSection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 pb-5 border-b border-slate-100">
+      <div className="flex items-center gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-semibold text-lg shadow-sm">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-slate-900 truncate">{user.name}</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 truncate">{user.name}</h3>
           <div className="flex items-center gap-2 mt-1">
             <p className="text-sm text-slate-500 truncate">{user.email}</p>
             <span className="text-slate-300">•</span>
@@ -272,7 +272,7 @@ function ProfileSection() {
             disabled={isSaving}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="secondary" onClick={() => setEditing(false)} disabled={isSaving}>
               Cancelar
             </Button>
@@ -289,10 +289,10 @@ function ProfileSection() {
           <FieldRow
             label="Status"
             value={user.active || user.isActive ? 'Ativo' : 'Inativo'}
-            valueClass={user.active || user.isActive ? 'text-success-700' : 'text-slate-500'}
+            valueClass={user.active || user.isActive ? 'text-success-700 dark:text-success-300' : 'text-slate-500 dark:text-slate-400'}
           />
 
-          <div className="pt-4 border-t border-slate-100">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button variant="primary" onClick={() => setEditing(true)}>
               Editar perfil
             </Button>
@@ -349,7 +349,7 @@ function SecuritySection() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl bg-warning-50/40 border border-warning-200/60 p-4">
+      <div className="rounded-xl bg-warning-50/40 dark:bg-warning-950/20 border border-warning-200/60 dark:border-warning-900/40 p-4">
         <p className="text-sm font-medium text-warning-900">Trocar senha</p>
         <p className="text-xs text-warning-800 mt-1">
           Após a alteração você será desconectado e precisará fazer login novamente.
@@ -386,15 +386,15 @@ function SecuritySection() {
           autoComplete="new-password"
         />
 
-        <div className="flex justify-end pt-4 border-t border-slate-100">
+        <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
           <Button type="submit" variant="primary" isLoading={isSaving}>
             Alterar senha
           </Button>
         </div>
       </form>
 
-      <div className="pt-6 border-t border-slate-100">
-        <p className="text-sm font-medium text-slate-900">Sessão</p>
+      <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Sessão</p>
         <p className="text-xs text-slate-500 mt-1 mb-4">
           Encerre sua sessão atual em todos os dispositivos.
         </p>
@@ -420,7 +420,7 @@ function SystemSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-semibold text-slate-900 mb-4">Sobre o sistema</h3>
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">Sobre o sistema</h3>
         <div className="space-y-3">
           <FieldRow label="Aplicação" value="Garagem77 — CRM Profissional" />
           <FieldRow label="Versão" value="1.0.0" />
@@ -429,8 +429,8 @@ function SystemSection() {
         </div>
       </div>
 
-      <div className="pt-5 border-t border-slate-100">
-        <h3 className="text-base font-semibold text-slate-900 mb-4">Módulos</h3>
+      <div className="pt-5 border-t border-slate-100 dark:border-slate-800">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">Módulos</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {[
             'Clientes',
@@ -445,17 +445,17 @@ function SystemSection() {
           ].map((m) => (
             <div
               key={m}
-              className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-200/60 flex items-center gap-2"
+              className="px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center gap-2"
             >
-              <CheckCircleIcon className="w-4 h-4 text-success-600 shrink-0" />
-              <span className="text-sm text-slate-700">{m}</span>
+              <CheckCircleIcon className="w-4 h-4 text-success-600 dark:text-success-400 shrink-0" />
+              <span className="text-sm text-slate-700 dark:text-slate-300">{m}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="pt-5 border-t border-slate-100">
-        <h3 className="text-base font-semibold text-slate-900 mb-2">Documentação da API</h3>
+      <div className="pt-5 border-t border-slate-100 dark:border-slate-800">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2">Documentação da API</h3>
         <p className="text-sm text-slate-500 mb-4">
           Acesse o Swagger UI para documentação interativa dos endpoints.
         </p>
@@ -463,7 +463,7 @@ function SystemSection() {
           href={`${apiUrl.replace(/\/api$/, '')}/api/swagger-ui.html`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700"
+          className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
         >
           Abrir Swagger UI →
         </a>
@@ -488,11 +488,11 @@ function FieldRow({
   valueClass?: string;
 }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+    <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
       <span className="text-sm text-slate-500">{label}</span>
       <span
         className={clsx(
-          'text-sm text-slate-900',
+          'text-sm text-slate-900 dark:text-slate-100',
           mono && 'font-mono text-xs',
           valueClass
         )}
@@ -525,14 +525,14 @@ export default function SettingsPage() {
                   className={clsx(
                     'w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-colors',
                     isActive
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-slate-600 hover:bg-slate-50'
+                      ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                   )}
                 >
                   <span
                     className={clsx(
                       'mt-0.5 shrink-0',
-                      isActive ? 'text-primary-600' : 'text-slate-400'
+                      isActive ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 dark:text-slate-500'
                     )}
                   >
                     {item.icon}
@@ -542,7 +542,7 @@ export default function SettingsPage() {
                     <span
                       className={clsx(
                         'block text-xs mt-0.5',
-                        isActive ? 'text-primary-600/80' : 'text-slate-400'
+                        isActive ? 'text-primary-600/80 dark:text-primary-400/80' : 'text-slate-400 dark:text-slate-500'
                       )}
                     >
                       {item.description}
@@ -557,7 +557,7 @@ export default function SettingsPage() {
         {/* Content */}
         <Card>
           <CardHeader>
-            <h2 className="text-base font-semibold text-slate-900">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
               {NAV_ITEMS.find((n) => n.key === section)?.label}
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">

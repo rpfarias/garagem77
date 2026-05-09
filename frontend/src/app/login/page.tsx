@@ -57,17 +57,17 @@ export default function LoginPage() {
               <span className="text-white font-bold text-xl">G</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900 leading-tight">Garagem77</h1>
-              <p className="text-xs text-slate-500">CRM Profissional</p>
+              <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100 leading-tight">Garagem77</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">CRM Profissional</p>
             </div>
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               Bem-vindo de volta
             </h2>
-            <p className="mt-2 text-slate-600">
+            <p className="mt-2 text-slate-600 dark:text-slate-400">
               Acesse sua conta para gerenciar seu negócio
             </p>
           </div>
@@ -87,8 +87,8 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-700">Senha</label>
-                <a href="#" className="text-xs font-medium text-primary-600 hover:text-primary-700">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Senha</label>
+                <a href="#" className="text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
                   Esqueceu sua senha?
                 </a>
               </div>
@@ -115,25 +115,25 @@ export default function LoginPage() {
           </form>
 
           {/* Demo credentials */}
-          <div className="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="mt-8 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-950/40 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-primary-600 dark:text-primary-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900">Credenciais de demonstração</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Credenciais de demonstração</p>
                 <div className="mt-2 space-y-1">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-slate-500">Email:</span>
-                    <code className="px-2 py-0.5 rounded bg-white border border-slate-200 font-mono text-slate-700">
+                    <span className="text-slate-500 dark:text-slate-400">Email:</span>
+                    <code className="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-slate-700 dark:text-slate-300">
                       admin@garagem77.com
                     </code>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-slate-500">Senha:</span>
-                    <code className="px-2 py-0.5 rounded bg-white border border-slate-200 font-mono text-slate-700">
+                    <span className="text-slate-500 dark:text-slate-400">Senha:</span>
+                    <code className="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-slate-700 dark:text-slate-300">
                       password123
                     </code>
                   </div>
@@ -142,7 +142,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <p className="mt-8 text-center text-xs text-slate-500">
+          <p className="mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
             © 2026 Garagem77. Todos os direitos reservados.
           </p>
         </div>

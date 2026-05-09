@@ -74,6 +74,13 @@ tbody tr:last-child td {
 /* Forms */
 input, select, textarea {
   @apply appearance-none;
+  color-scheme: light;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  color-scheme: dark;
 }
 
 input[type='checkbox'],

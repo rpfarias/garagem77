@@ -147,14 +147,14 @@ function PaymentForm({ onSuccess, onCancel }: PaymentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">Pedido</label>
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Pedido</label>
         <select
           value={orderId}
           onChange={(e) => setOrderId(e.target.value)}
           disabled={isLoading || loadingOrders}
           className={clsx(
-            'w-full px-3.5 py-2.5 rounded-lg text-sm bg-white border shadow-sm focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50',
-            errors.orderId ? 'border-danger-300' : 'border-slate-200'
+            'w-full px-3.5 py-2.5 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border shadow-sm focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:bg-slate-50 dark:disabled:bg-slate-800/60',
+            errors.orderId ? 'border-danger-300 dark:border-danger-700' : 'border-slate-200 dark:border-slate-700'
           )}
         >
           <option value="">{loadingOrders ? 'Carregando...' : 'Selecione um pedido'}</option>
@@ -165,11 +165,11 @@ function PaymentForm({ onSuccess, onCancel }: PaymentFormProps) {
             </option>
           ))}
         </select>
-        {errors.orderId && <span className="text-xs text-danger-600">{errors.orderId}</span>}
+        {errors.orderId && <span className="text-xs text-danger-600 dark:text-danger-400">{errors.orderId}</span>}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">Método de pagamento</label>
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Método de pagamento</label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {(Object.keys(METHOD_LABELS) as PaymentMethod[]).map((m) => (
             <button
@@ -180,8 +180,8 @@ function PaymentForm({ onSuccess, onCancel }: PaymentFormProps) {
               className={clsx(
                 'p-3 rounded-lg border text-sm font-medium transition-colors',
                 paymentMethod === m
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 ring-2 ring-primary-500/20'
-                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 ring-2 ring-primary-500/20'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
               )}
             >
               <div className="text-xl mb-0.5">{METHOD_ICON[m]}</div>
@@ -200,11 +200,11 @@ function PaymentForm({ onSuccess, onCancel }: PaymentFormProps) {
         error={errors.amount}
         disabled={isLoading}
         placeholder="0,00"
-        leftIcon={<span className="text-slate-500 text-sm font-medium">R$</span>}
+        leftIcon={<span className="text-slate-500 dark:text-slate-400 text-sm font-medium">R$</span>}
         helpText="Preenchido automaticamente com o total do pedido (editável)"
       />
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
@@ -318,14 +318,14 @@ export default function PaymentsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-success-50 flex items-center justify-center">
-                <CheckCircleIcon className="w-5 h-5 text-success-600" />
+              <div className="w-11 h-11 rounded-xl bg-success-50 dark:bg-success-950/40 flex items-center justify-center">
+                <CheckCircleIcon className="w-5 h-5 text-success-600 dark:text-success-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   Recebido (página) — {completedCount}
                 </p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {formatPrice(completedAmount)}
                 </p>
               </div>
@@ -334,14 +334,14 @@ export default function PaymentsPage() {
 
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center">
-                <ClockIcon className="w-5 h-5 text-primary-600" />
+              <div className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-950/40 flex items-center justify-center">
+                <ClockIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   Pendente (página) — {pendingCount}
                 </p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {formatPrice(pendingAmount)}
                 </p>
               </div>
@@ -350,12 +350,12 @@ export default function PaymentsPage() {
 
           <Card>
             <div className="p-5 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-warning-50 flex items-center justify-center">
-                <DollarIcon className="w-5 h-5 text-warning-600" />
+              <div className="w-11 h-11 rounded-xl bg-warning-50 dark:bg-warning-950/40 flex items-center justify-center">
+                <DollarIcon className="w-5 h-5 text-warning-600 dark:text-warning-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Total registros</p>
-                <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total registros</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                   {totalElements}
                 </p>
               </div>
@@ -366,7 +366,7 @@ export default function PaymentsPage() {
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500">Total</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Total</span>
             <Badge variant="default" size="md">
               {totalElements} {totalElements === 1 ? 'pagamento' : 'pagamentos'}
             </Badge>
@@ -383,7 +383,7 @@ export default function PaymentsPage() {
 
         <Card>
           {/* Status Tabs */}
-          <div className="px-5 pt-3 border-b border-slate-100 overflow-x-auto">
+          <div className="px-5 pt-3 border-b border-slate-100 dark:border-slate-800 overflow-x-auto">
             <div className="flex gap-1 min-w-fit">
               {STATUS_TABS.map((tab) => {
                 const isActive = statusFilter === tab.key;
@@ -394,8 +394,8 @@ export default function PaymentsPage() {
                     className={clsx(
                       'px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                       isActive
-                        ? 'border-primary-600 text-primary-700'
-                        : 'border-transparent text-slate-500 hover:text-slate-900'
+                        ? 'border-primary-600 text-primary-700 dark:text-primary-300'
+                        : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                     )}
                   >
                     {tab.label}
@@ -407,20 +407,20 @@ export default function PaymentsPage() {
 
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-10 h-10 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-slate-500">Carregando pagamentos...</p>
+              <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary-600 rounded-full animate-spin" />
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Carregando pagamentos...</p>
             </div>
           ) : !data?.content || data.content.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <DollarIcon className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                <DollarIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {statusFilter !== 'ALL'
                   ? `Nenhum pagamento ${STATUS_LABELS[statusFilter as PaymentStatus].toLowerCase()}`
                   : 'Nenhum pagamento registrado'}
               </h3>
-              <p className="mt-1 text-sm text-slate-500 max-w-sm">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm">
                 {statusFilter !== 'ALL'
                   ? 'Quando houver pagamentos com este status, eles aparecerão aqui.'
                   : 'Registre o primeiro pagamento vinculando-o a um pedido existente.'}
@@ -467,31 +467,31 @@ export default function PaymentsPage() {
                                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-success-500 to-success-700 flex items-center justify-center shrink-0">
                                   <DollarIcon className="w-4 h-4 text-white" />
                                 </div>
-                                <code className="text-xs font-mono text-slate-500">
+                                <code className="text-xs font-mono text-slate-500 dark:text-slate-400">
                                   #{p.id.slice(0, 8)}
                                 </code>
                               </div>
                             </td>
                             <td>
                               <div>
-                                <p className="font-medium text-slate-900 truncate">
+                                <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
                                   {p.customerName || '-'}
                                 </p>
                                 {p.orderPublicId && (
-                                  <code className="text-xs font-mono text-slate-500">
+                                  <code className="text-xs font-mono text-slate-500 dark:text-slate-400">
                                     #{p.orderPublicId.slice(0, 8)}
                                   </code>
                                 )}
                               </div>
                             </td>
                             <td>
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-xs font-medium text-slate-700">
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
                                 <span>{METHOD_ICON[p.paymentMethod]}</span>
                                 {METHOD_LABELS[p.paymentMethod]}
                               </span>
                             </td>
                             <td>
-                              <span className="font-semibold text-slate-900 tabular-nums">
+                              <span className="font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
                                 {formatPrice(Number(p.amount))}
                               </span>
                             </td>
@@ -500,7 +500,7 @@ export default function PaymentsPage() {
                                 {STATUS_LABELS[p.status]}
                               </Badge>
                             </td>
-                            <td className="text-xs text-slate-500">
+                            <td className="text-xs text-slate-500 dark:text-slate-400">
                               {p.paymentDate ? formatDateTime(p.paymentDate) : '-'}
                             </td>
                             <td>
@@ -540,7 +540,7 @@ export default function PaymentsPage() {
                                     <button
                                       onClick={() => patchAction(p.id, 'fail')}
                                       disabled={isInAction}
-                                      className="text-xs px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-danger-700 hover:bg-danger-50 transition-colors"
+                                      className="text-xs px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-danger-700 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors"
                                     >
                                       Falhar
                                     </button>
@@ -549,14 +549,14 @@ export default function PaymentsPage() {
                                     <button
                                       onClick={() => patchAction(p.id, 'cancel')}
                                       disabled={isInAction}
-                                      className="text-xs px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                                      className="text-xs px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                     >
                                       Cancelar
                                     </button>
                                   )}
                                   <button
                                     onClick={() => setDeletingId(p.id)}
-                                    className="p-2 rounded-lg text-slate-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"
+                                    className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors"
                                     title="Remover"
                                   >
                                     <TrashIcon className="w-4 h-4" />
@@ -573,10 +573,10 @@ export default function PaymentsPage() {
               </div>
 
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
-                    Página <span className="font-medium text-slate-900">{currentPage}</span> de{' '}
-                    <span className="font-medium text-slate-900">{totalPages}</span>
+                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Página <span className="font-medium text-slate-900 dark:text-slate-100">{currentPage}</span> de{' '}
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
