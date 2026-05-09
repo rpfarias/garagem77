@@ -6,11 +6,16 @@ import com.garagem77.auth.service.UserService;
 import com.garagem77.company.entity.Company;
 import com.garagem77.company.repository.CompanyRepository;
 import com.garagem77.company.service.CompanyService;
+import com.garagem77.expense.entity.CategoryType;
+import com.garagem77.expense.repository.ExpenseCategoryRepository;
+import com.garagem77.expense.service.ExpenseCategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Garante que existe um admin padrão para login no ambiente de desenvolvimento.
@@ -35,11 +40,14 @@ public class DataSeeder implements CommandLineRunner {
     private final CompanyService companyService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final ExpenseCategoryService expenseCategoryService;
 
     @Override
     public void run(String... args) {
         Company company = ensureDefaultCompany();
         ensureDefaultAdmin(company);
+        ensureDefaultExpenseCategories();
     }
 
     private Company ensureDefaultCompany() {
@@ -72,4 +80,25 @@ public class DataSeeder implements CommandLineRunner {
         );
         log.info("Seed: admin criado com publicId={}", admin.getPublicId());
     }
+
+    private void ensureDefaultExpenseCategories() {
+        List<DefaultCategory> defaults = List.of(
+            new DefaultCategory("Manutenção", CategoryType.OPERACIONAL),
+            new DefaultCategory("Equipamento", CategoryType.OPERACIONAL),
+            new DefaultCategory("Marketing", CategoryType.OPERACIONAL),
+            new DefaultCategory("Pessoal", CategoryType.OPERACIONAL),
+            new DefaultCategory("Servidores", CategoryType.INFRAESTRUTURA),
+            new DefaultCategory("Software/SaaS", CategoryType.INFRAESTRUTURA),
+            new DefaultCategory("Outros", CategoryType.OPERACIONAL)
+        );
+
+        for (DefaultCategory dc : defaults) {
+            if (expenseCategoryRepository.findByName(dc.name).isEmpty()) {
+                expenseCategoryService.create(dc.name, dc.type);
+                log.info("Seed: categoria de despesa criada '{}' ({})", dc.name, dc.type);
+            }
+        }
+    }
+
+    private record DefaultCategory(String name, CategoryType type) {}
 }

@@ -292,6 +292,75 @@ export interface LoyaltyTransaction {
   createdAt: string;
 }
 
+// Despesas
+export type CategoryType = 'OPERACIONAL' | 'INFRAESTRUTURA';
+export type ExpensePaymentMethod =
+  | 'CARTAO_CREDITO'
+  | 'PIX'
+  | 'BOLETO'
+  | 'TRANSFERENCIA'
+  | 'DINHEIRO'
+  | 'OUTRO';
+export type ExpenseStatus = 'PENDENTE' | 'PAGO' | 'ATRASADO' | 'CANCELADO';
+
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  type: CategoryType;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateExpenseCategoryDTO {
+  name: string;
+  type: CategoryType;
+}
+
+export interface Expense {
+  id: string;
+  supplier: string;
+  description?: string;
+  expenseDate: string;
+  dueDate?: string;
+  amount: number;
+  paymentMethod: ExpensePaymentMethod;
+  paymentStatus: ExpenseStatus;
+  categoryId: string;
+  categoryName: string;
+  categoryType: CategoryType;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateExpenseDTO {
+  supplier: string;
+  description?: string;
+  expenseDate: string;
+  dueDate?: string;
+  amount: number;
+  paymentMethod: ExpensePaymentMethod;
+  paymentStatus: Exclude<ExpenseStatus, 'ATRASADO'>;
+  categoryId: string;
+}
+
+export interface ExpensesByCategoryItem {
+  categoryId: string;
+  categoryName: string;
+  categoryType: CategoryType;
+  total: number;
+  count: number;
+}
+
+export interface ExpensesByMonthItem {
+  year: number;
+  month: number;
+  label: string;
+  total: number;
+  opex: number;
+  infra: number;
+}
+
 // Reports / Analytics
 export interface DashboardSummary {
   totalCustomers: number;
@@ -306,6 +375,12 @@ export interface DashboardSummary {
   averageServicePrice: number;
   maxServicePrice: number;
   minServicePrice: number;
+  totalExpensesThisMonth: number;
+  totalExpensesAllTime: number;
+  totalOpexThisMonth: number;
+  totalInfraThisMonth: number;
+  pendingExpensesCount: number;
+  overdueExpensesCount: number;
 }
 
 export interface RecentScheduleItem {

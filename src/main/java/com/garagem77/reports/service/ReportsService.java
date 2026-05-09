@@ -4,9 +4,18 @@ import com.garagem77.customer.entity.Customer;
 import com.garagem77.customer.entity.Vehicle;
 import com.garagem77.customer.repository.CustomerRepository;
 import com.garagem77.customer.repository.VehicleRepository;
+import com.garagem77.expense.entity.CategoryType;
+import com.garagem77.expense.entity.Expense;
+import com.garagem77.expense.entity.ExpenseCategory;
+import com.garagem77.expense.entity.ExpenseStatus;
+import com.garagem77.expense.repository.ExpenseCategoryRepository;
+import com.garagem77.expense.repository.ExpenseRepository;
+import com.garagem77.expense.service.ExpenseService;
 import com.garagem77.inventory.entity.Product;
 import com.garagem77.inventory.repository.ProductRepository;
 import com.garagem77.reports.dto.DashboardSummary;
+import com.garagem77.reports.dto.ExpensesByCategoryItem;
+import com.garagem77.reports.dto.ExpensesByMonthItem;
 import com.garagem77.reports.dto.RecentScheduleItem;
 import com.garagem77.reports.dto.TopServiceItem;
 import com.garagem77.scheduling.entity.Schedule;
@@ -18,6 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +47,9 @@ public class ReportsService {
     private final ServiceRepository serviceRepository;
     private final ProductRepository productRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ExpenseRepository expenseRepository;
+    private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final ExpenseService expenseService;
 
     public DashboardSummary buildDashboard() {
         List<Customer> customers = customerRepository.findAll();
@@ -77,6 +92,34 @@ public class ReportsService {
             minPrice = services.stream().map(Service::getPrice).min(Comparator.naturalOrder()).orElse(BigDecimal.ZERO);
         }
 
+        // Expenses
+        LocalDate today = LocalDate.now();
+        LocalDate monthStart = today.withDayOfMonth(1);
+        LocalDate monthEnd = today.withDayOfMonth(today.lengthOfMonth());
+
+        List<Expense> allExpenses = expenseRepository.findAll();
+        List<Expense> monthExpenses = expenseRepository.findByExpenseDateBetween(monthStart, monthEnd);
+
+        Map<Long, ExpenseCategory> categoriesById = expenseCategoryRepository.findAll().stream()
+            .collect(Collectors.toMap(ExpenseCategory::getId, c -> c));
+
+        BigDecimal totalAllTime = allExpenses.stream()
+            .map(Expense::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalThisMonth = monthExpenses.stream()
+            .map(Expense::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal opexThisMonth = sumByCategoryType(monthExpenses, categoriesById, CategoryType.OPERACIONAL);
+        BigDecimal infraThisMonth = sumByCategoryType(monthExpenses, categoriesById, CategoryType.INFRAESTRUTURA);
+
+        long pendingCount = allExpenses.stream()
+            .filter(e -> expenseService.effectiveStatus(e) == ExpenseStatus.PENDENTE)
+            .count();
+        long overdueCount = allExpenses.stream()
+            .filter(e -> expenseService.effectiveStatus(e) == ExpenseStatus.ATRASADO)
+            .count();
+
         return DashboardSummary.builder()
             .totalCustomers(customers.size())
             .totalVehicles(vehicles.size())
@@ -90,7 +133,86 @@ public class ReportsService {
             .averageServicePrice(avgPrice)
             .maxServicePrice(maxPrice)
             .minServicePrice(minPrice)
+            .totalExpensesThisMonth(totalThisMonth)
+            .totalExpensesAllTime(totalAllTime)
+            .totalOpexThisMonth(opexThisMonth)
+            .totalInfraThisMonth(infraThisMonth)
+            .pendingExpensesCount(pendingCount)
+            .overdueExpensesCount(overdueCount)
             .build();
+    }
+
+    public List<ExpensesByCategoryItem> expensesByCategory(LocalDate start, LocalDate end) {
+        List<Expense> expenses = expenseRepository.findByExpenseDateBetween(start, end);
+        Map<Long, ExpenseCategory> categoriesById = expenseCategoryRepository.findAll().stream()
+            .collect(Collectors.toMap(ExpenseCategory::getId, c -> c));
+
+        Map<Long, List<Expense>> grouped = expenses.stream()
+            .collect(Collectors.groupingBy(Expense::getCategoryId));
+
+        return grouped.entrySet().stream()
+            .map(entry -> {
+                ExpenseCategory cat = categoriesById.get(entry.getKey());
+                if (cat == null) return null;
+                BigDecimal total = entry.getValue().stream()
+                    .map(Expense::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                return ExpensesByCategoryItem.builder()
+                    .categoryId(cat.getPublicId())
+                    .categoryName(cat.getName())
+                    .categoryType(cat.getType())
+                    .total(total)
+                    .count(entry.getValue().size())
+                    .build();
+            })
+            .filter(java.util.Objects::nonNull)
+            .sorted(Comparator.comparing(ExpensesByCategoryItem::getTotal).reversed())
+            .collect(Collectors.toList());
+    }
+
+    public List<ExpensesByMonthItem> expensesByMonth(int monthsBack) {
+        LocalDate today = LocalDate.now();
+        YearMonth firstMonth = YearMonth.from(today).minusMonths(monthsBack - 1L);
+        LocalDate windowStart = firstMonth.atDay(1);
+        LocalDate windowEnd = today.withDayOfMonth(today.lengthOfMonth());
+
+        List<Expense> expenses = expenseRepository.findByExpenseDateBetween(windowStart, windowEnd);
+        Map<Long, ExpenseCategory> categoriesById = expenseCategoryRepository.findAll().stream()
+            .collect(Collectors.toMap(ExpenseCategory::getId, c -> c));
+
+        List<ExpensesByMonthItem> result = new ArrayList<>();
+        for (int i = 0; i < monthsBack; i++) {
+            YearMonth ym = firstMonth.plusMonths(i);
+            LocalDate mStart = ym.atDay(1);
+            LocalDate mEnd = ym.atEndOfMonth();
+            List<Expense> bucket = expenses.stream()
+                .filter(e -> !e.getExpenseDate().isBefore(mStart) && !e.getExpenseDate().isAfter(mEnd))
+                .collect(Collectors.toList());
+
+            BigDecimal total = bucket.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal opex = sumByCategoryType(bucket, categoriesById, CategoryType.OPERACIONAL);
+            BigDecimal infra = sumByCategoryType(bucket, categoriesById, CategoryType.INFRAESTRUTURA);
+
+            result.add(ExpensesByMonthItem.builder()
+                .year(ym.getYear())
+                .month(ym.getMonthValue())
+                .label(String.format("%02d/%d", ym.getMonthValue(), ym.getYear()))
+                .total(total)
+                .opex(opex)
+                .infra(infra)
+                .build());
+        }
+        return result;
+    }
+
+    private BigDecimal sumByCategoryType(List<Expense> expenses, Map<Long, ExpenseCategory> categoriesById, CategoryType type) {
+        return expenses.stream()
+            .filter(e -> {
+                ExpenseCategory c = categoriesById.get(e.getCategoryId());
+                return c != null && c.getType() == type;
+            })
+            .map(Expense::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<RecentScheduleItem> recentSchedules(int limit) {

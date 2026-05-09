@@ -6,6 +6,8 @@ import {
   RecentScheduleItem,
   TopServiceItem,
   ScheduleStatus,
+  ExpensesByCategoryItem,
+  ExpensesByMonthItem,
 } from '@/types';
 import { useFetch } from '@/hooks/useFetch';
 import { Layout } from '@/components/Layout';
@@ -475,7 +477,178 @@ export default function ReportsPage() {
             </CardBody>
           </Card>
         </div>
+
+        {/* Expenses Section */}
+        <ExpensesReports />
       </div>
     </Layout>
+  );
+}
+
+function ExpensesReports() {
+  const { data: byCategory, isLoading: loadingByCategory } =
+    useFetch<ExpensesByCategoryItem[]>('/reports/expenses-by-category');
+  const { data: byMonth, isLoading: loadingByMonth } =
+    useFetch<ExpensesByMonthItem[]>('/reports/expenses-by-month?months=12');
+
+  const totalByCategory =
+    byCategory?.reduce((sum, c) => sum + Number(c.total), 0) || 0;
+  const maxMonth = byMonth
+    ? Math.max(...byMonth.map((m) => Number(m.total)))
+    : 0;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* Expenses by Category */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Despesas por categoria
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Mês corrente</p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-warning-50 dark:bg-warning-950/40 flex items-center justify-center">
+              <DollarIcon className="w-5 h-5 text-warning-600 dark:text-warning-400" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody className="!p-0">
+          {loadingByCategory ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400 p-6">Carregando...</p>
+          ) : !byCategory || byCategory.length === 0 ? (
+            <div className="py-12 text-center">
+              <DollarIcon className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" />
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                Sem despesas no mês corrente.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              {byCategory.map((c, idx) => {
+                const pct =
+                  totalByCategory > 0
+                    ? (Number(c.total) / totalByCategory) * 100
+                    : 0;
+                return (
+                  <div key={c.categoryId} className="px-6 py-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-xs font-bold text-slate-400 dark:text-slate-500 tabular-nums w-5">
+                        #{idx + 1}
+                      </span>
+                      <p className="flex-1 font-medium text-slate-900 dark:text-slate-100 truncate">
+                        {c.categoryName}
+                      </p>
+                      <Badge
+                        variant={
+                          c.categoryType === 'OPERACIONAL' ? 'default' : 'success'
+                        }
+                        size="sm"
+                      >
+                        {c.categoryType === 'OPERACIONAL' ? 'OPEX' : 'Infra'}
+                      </Badge>
+                      <span className="text-sm font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+                        {formatPrice(Number(c.total))}
+                      </span>
+                    </div>
+                    <div className="ml-8 flex items-center gap-3">
+                      <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className={clsx(
+                            'h-full rounded-full transition-all',
+                            c.categoryType === 'OPERACIONAL'
+                              ? 'bg-warning-500'
+                              : 'bg-success-500'
+                          )}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums shrink-0">
+                        {pct.toFixed(0)}% • {c.count}{' '}
+                        {c.count === 1 ? 'item' : 'itens'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Expenses by Month */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Despesas por mês
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Últimos 12 meses</p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-success-50 dark:bg-success-950/40 flex items-center justify-center">
+              <ChartIcon className="w-5 h-5 text-success-600 dark:text-success-400" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody>
+          {loadingByMonth ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400">Carregando...</p>
+          ) : !byMonth || byMonth.length === 0 || maxMonth === 0 ? (
+            <div className="py-12 text-center">
+              <ChartIcon className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" />
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                Sem dados de despesas nos últimos meses.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {byMonth.map((m) => {
+                const pct = maxMonth > 0 ? (Number(m.total) / maxMonth) * 100 : 0;
+                const opexPct =
+                  Number(m.total) > 0
+                    ? (Number(m.opex) / Number(m.total)) * 100
+                    : 0;
+                return (
+                  <div key={m.label}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-medium text-slate-600 dark:text-slate-400 tabular-nums">
+                        {m.label}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
+                        {formatPrice(Number(m.total))}
+                      </span>
+                    </div>
+                    <div className="flex h-2 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      <div
+                        className="bg-warning-500"
+                        style={{ width: `${(pct * opexPct) / 100}%` }}
+                        title={`OPEX: ${formatPrice(Number(m.opex))}`}
+                      />
+                      <div
+                        className="bg-success-500"
+                        style={{ width: `${pct - (pct * opexPct) / 100}%` }}
+                        title={`Infra: ${formatPrice(Number(m.infra))}`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex items-center gap-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-warning-500" />
+                  <span className="text-xs text-slate-500 dark:text-slate-400">OPEX</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-success-500" />
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Infraestrutura</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+    </div>
   );
 }

@@ -35,6 +35,7 @@ const navItems: NavItem[] = [
   { href: '/orders', label: 'Pedidos', icon: <PackageIcon /> },
   { href: '/payments', label: 'Pagamentos', icon: <DollarIcon /> },
   { href: '/products', label: 'Produtos', icon: <PackageIcon /> },
+  { href: '/expenses', label: 'Despesas', icon: <DollarIcon /> },
   { href: '/loyalty', label: 'Fidelidade', icon: <SparkleIcon /> },
   { href: '/reports', label: 'Relatórios', icon: <ChartIcon /> },
 ];

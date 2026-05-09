@@ -35,4 +35,12 @@ public class DashboardSummary {
     private BigDecimal averageServicePrice;
     private BigDecimal maxServicePrice;
     private BigDecimal minServicePrice;
+
+    // Expenses
+    private BigDecimal totalExpensesThisMonth;
+    private BigDecimal totalExpensesAllTime;
+    private BigDecimal totalOpexThisMonth;
+    private BigDecimal totalInfraThisMonth;
+    private long pendingExpensesCount;
+    private long overdueExpensesCount;
 }
